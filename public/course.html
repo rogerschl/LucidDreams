@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kurs | LucidDreams</title>
+
+  <link rel="stylesheet" href="./css/course.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <main class="course-page">
+
+    <header class="topbar">
+      <div>
+        <p class="welcome">LucidDreams Kurs</p>
+        <h1>Lerne luzides Träumen Schritt für Schritt</h1>
+      </div>
+
+      <a href="./dashboard.html" class="ghost-btn">Dashboard</a>
+    </header>
+
+    <section class="course-layout">
+
+      <aside class="course-sidebar">
+        <div class="sidebar-header">
+          <h2>Kurs</h2>
+          <p id="courseProgressText">0 / 6 erledigt</p>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="courseProgressFill"></div>
+          </div>
+        </div>
+
+        <nav class="lesson-nav" id="lessonNav">
+
+          <div class="lesson-module">
+            <button class="module-title" type="button">
+              <span>00</span>
+              Start
+            </button>
+
+            <div class="module-lessons">
+              <button class="lesson-link active" data-lesson="0">
+                <small>0.1</small>
+                Was dich erwartet
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-module">
+            <button class="module-title" type="button">
+              <span>01</span>
+              Traumerinnerung
+            </button>
+
+            <div class="module-lessons">
+              <button class="lesson-link" data-lesson="1">
+                <small>1.1</small>
+                Warum Traumerinnerung die Basis ist
+              </button>
+
+              <button class="lesson-link" data-lesson="2">
+                <small>1.2</small>
+                Morgenroutine
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-module">
+            <button class="module-title" type="button">
+              <span>02</span>
+              Traumtagebuch
+            </button>
+
+            <div class="module-lessons">
+              <button class="lesson-link" data-lesson="3">
+                <small>2.1</small>
+                Traumtagebuch richtig nutzen
+              </button>
+
+              <button class="lesson-link" data-lesson="4">
+                <small>2.2</small>
+                Traumzeichen erkennen
+              </button>
+            </div>
+          </div>
+
+          <div class="lesson-module">
+            <button class="module-title" type="button">
+              <span>03</span>
+              Reality Checks
+            </button>
+
+            <div class="module-lessons">
+              <button class="lesson-link" data-lesson="5">
+                <small>3.1</small>
+                Reality Checks verstehen
+              </button>
+            </div>
+          </div>
+
+        </nav>
+      </aside>
+
+      <article class="lesson-card">
+
+        <div class="lesson-top">
+          <span class="tag" id="lessonTag">Lektion 0</span>
+          <span class="status-pill" id="lessonStatus">Nicht erledigt</span>
+        </div>
+
+        <h2 id="lessonTitle">Was dich erwartet</h2>
+
+        <div class="lesson-content" id="lessonContent"></div>
+
+        <div class="lesson-actions">
+          <button type="button" class="secondary-btn" id="prevLessonBtn">
+            Vorherige Lektion
+          </button>
+
+          <button type="button" class="primary-btn" id="completeLessonBtn">
+            Als erledigt markieren
+          </button>
+
+          <button type="button" class="secondary-btn" id="nextLessonBtn">
+            Nächste Lektion
+          </button>
+        </div>
+
+      </article>
+
+    </section>
+
+  </main>
+
+  <script src="./js/course.js"></script>
+</body>
+</html>

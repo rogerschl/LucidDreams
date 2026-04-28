@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traum hinzufügen | LucidDreams</title>
+
+  <link rel="stylesheet" href="./css/dream-journal.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <p class="welcome">Traumtagebuch</p>
+          <h1>Neuen Traum eintragen</h1>
+        </div>
+
+        <a href="./dashboard.html" class="back-dashboard">Zurück</a>
+      </header>
+
+      <section class="journal-center">
+
+        <form class="dream-form" id="dreamForm">
+
+          <div class="form-header">
+            <span class="tag">Neuer Eintrag</span>
+            <h2>Was hast du geträumt?</h2>
+            <p>
+              Schreib alles auf, woran du dich erinnerst. Es muss nicht vollständig sein.
+              Wichtig ist nur, dass du dein Gehirn trainierst, Träume ernst zu nehmen.
+            </p>
+          </div>
+
+          <div class="input-group">
+            <label for="title">Titel</label>
+            <input type="text" id="title" placeholder="z. B. Fliegen über einer Stadt">
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label for="date">Datum</label>
+              <input type="date" id="date">
+            </div>
+
+            <div class="input-group">
+              <label for="clarity">Traumart</label>
+              <select id="clarity">
+                <option>Normaler Traum</option>
+                <option>Halb-luzid</option>
+                <option>Luzid</option>
+                <option>Albtraum</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label for="mood">Stimmung</label>
+              <select id="mood">
+                <option>Neutral</option>
+                <option>Fasziniert</option>
+                <option>Glücklich</option>
+                <option>Ängstlich</option>
+                <option>Verwirrt</option>
+                <option>Aufgeregt</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="sleep">Schlafqualität</label>
+              <select id="sleep">
+                <option>Gut</option>
+                <option>Mittel</option>
+                <option>Schlecht</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="description">Traumbeschreibung</label>
+            <textarea id="description" placeholder="Was ist passiert? Wo warst du? Wer war dabei? Was war seltsam?"></textarea>
+          </div>
+
+          <div class="input-group">
+            <label>Traumzeichen</label>
+
+            <div class="tag-picker">
+
+              <div class="selected-tags" id="selectedTags"></div>
+
+              <div class="tag-options" id="tagOptions">
+                <button type="button" class="dream-tag active">Fliegen</button>
+                <button type="button" class="dream-tag">Schule</button>
+                <button type="button" class="dream-tag">Verfolgung</button>
+                <button type="button" class="dream-tag">Alte Freunde</button>
+                <button type="button" class="dream-tag">Familie</button>
+                <button type="button" class="dream-tag">Fallen</button>
+                <button type="button" class="dream-tag">Zähne</button>
+                <button type="button" class="dream-tag">Zug</button>
+                <button type="button" class="dream-tag">Wasser</button>
+                <button type="button" class="dream-tag">Prüfung</button>
+                <button type="button" class="dream-tag">Unbekannter Ort</button>
+                <button type="button" class="dream-tag">Technik funktioniert nicht</button>
+              </div>
+
+              <div class="new-tag-row">
+                <input type="text" id="newTagInput" placeholder="Neues Traumzeichen hinzufügen">
+                <button type="button" id="addTagBtn">Hinzufügen</button>
+              </div>
+
+            </div>
+
+            <p class="input-hint">
+              Traumzeichen sind wiederkehrende Muster. Je öfter du sie markierst,
+              desto leichter erkennst du später im Traum, dass du träumst.
+            </p>
+          </div>
+
+          <div class="input-group">
+            <label for="notes">Notizen / Erkenntnisse</label>
+            <textarea id="notes" class="small-textarea" placeholder="Gab es etwas Auffälliges? Hätte ein Reality Check geholfen?"></textarea>
+          </div>
+
+          <button type="submit" class="primary-btn">
+            Traum speichern
+          </button>
+
+        </form>
+        
+
+      </section>
+
+    </main>
+
+  </div>
+<script src="./js/dream-journal.js"></script>
+</body>
+</html>

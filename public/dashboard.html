@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | LucidDreams</title>
+
+  <link rel="stylesheet" href="./css/dashboard.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="./dashboard.html" class="sidebar-logo">
+        LucidDreams
+      </a>
+
+      <nav class="sidebar-nav">
+        <a href="./dashboard.html" class="active">Dashboard</a>
+        <a href="./dream-journal.html">Traum hinzufügen</a>
+        <a href="./dream-archive.html">Traumarchiv</a>
+        <a href="./course.html">Kurs</a>
+        <a href="./reality-check.html">Reality Checks</a>
+        <a href="./statistics.html">Statistiken</a>
+        <a href="./profile.html">Profil</a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Heutiger Fokus</p>
+        <span>Reality Checks bewusst machen, nicht mechanisch.</span>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div>
+          <p class="welcome">Willkommen zurück</p>
+          <h1>Bereit für klare Träume?</h1>
+        </div>
+
+        <a href="./profile.html" class="profile">
+          <div class="profile-circle" id="profileInitial">R</div>
+          <span id="profileName">Roger</span>
+        </a>
+      </header>
+
+      <!-- HERO DASHBOARD -->
+      <section class="dashboard-hero">
+        <div class="hero-text">
+          <span class="tag">Heute</span>
+
+          <h2 id="dashboardGreeting">
+         !<span id="dashboardNameHighlight">Roger</span>, hast du dich heute schon
+             an einen Traum erinnert?
+          </h2>
+
+          <p>
+            Notiere direkt nach dem Aufwachen alles, woran du dich erinnerst.
+            Auch kleine Fragmente zählen.
+          </p>
+
+          <div class="hero-actions">
+            <a href="./dream-journal.html" class="primary-btn">+ Traum eintragen</a>
+            <a href="./reality-check.html" class="secondary-btn">Reality Check machen</a>
+          </div>
+        </div>
+
+        <div class="hero-orb">
+          <img src="./img/logo.png" alt="LucidDreams Logo">
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <p>Träume gesamt</p>
+          <h3 id="totalDreams">0</h3>
+          <span>gespeicherte Einträge</span>
+        </div>
+
+        <div class="stat-card">
+          <p>Luzide Träume</p>
+          <h3 id="lucidDreams">0</h3>
+          <span>bewusste Träume</span>
+        </div>
+
+        <div class="stat-card">
+     <p>Reality Checks</p>
+    <h3 id="realityProgress">0/8</h3>
+     <span>heutiger Fortschritt</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Träume diese Woche</p>
+         <h3 id="weeklyDreamProgress">0/5</h3>
+         <span>Wochenziel bis Sonntag</span>
+    </div>
+
+      <!-- MAIN GRID -->
+      <section class="content-grid">
+
+        <!-- COURSE -->
+        <div class="panel large-panel">
+          <div class="panel-header">
+            <div>
+              <span class="tag">Kurs</span>
+              <h2>Dein Lernpfad</h2>
+            </div>
+            <p>37%</p>
+          </div>
+
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+
+          <div class="course-list">
+            <div class="course-item done">
+              <span>01</span>
+              <div>
+                <h3>Grundlagen verstehen</h3>
+                <p>Was luzides Träumen ist und was realistisch ist.</p>
+              </div>
+            </div>
+
+            <div class="course-item active">
+              <span>02</span>
+              <div>
+                <h3>Traumerinnerung trainieren</h3>
+                <p>Die Basis für jeden Klartraum.</p>
+              </div>
+            </div>
+
+            <div class="course-item">
+              <span>03</span>
+              <div>
+                <h3>Traumtagebuch nutzen</h3>
+                <p>Muster, Orte und Traumzeichen erkennen.</p>
+              </div>
+            </div>
+
+            <div class="course-item">
+              <span>04</span>
+              <div>
+                <h3>Reality Checks meistern</h3>
+                <p>Bewusst zweifeln statt automatisch prüfen.</p>
+              </div>
+            </div>
+
+            <div class="course-item">
+              <span>05</span>
+              <div>
+                <h3>Traumkontrolle lernen</h3>
+                <p>Stabilisieren, steuern und bewusst handeln.</p>
+              </div>
+            </div>
+          </div>
+
+          <a href="#" class="primary-btn full-btn">Nächste Lektion starten</a>
+        </div>
+
+        <!-- DREAM JOURNAL -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="tag">Traumtagebuch</span>
+              <h2>Letzte Träume</h2>
+            </div>
+          </div>
+
+          <div class="dream-list" id="recentDreamList">
+            <p class="empty-state">Noch keine Träume gespeichert.</p>
+          </div>
+
+          <a href="./dream-archive.html" class="secondary-btn full-btn">Alle Träume ansehen</a>
+        </div>
+
+        <!-- REALITY CHECK -->
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="tag">Reality Check</span>
+              <h2>Bewusstseinsmoment</h2>
+            </div>
+          </div>
+
+          <div class="reality-box">
+            <p class="question">Bist du gerade wirklich wach?</p>
+
+            <ul>
+              <li>Wie bist du hierher gekommen?</li>
+              <li>Was hast du vor 10 Minuten gemacht?</li>
+              <li>Ist etwas an deiner Umgebung unlogisch?</li>
+              <li>Kannst du durch die geschlossene Nase atmen?</li>
+            </ul>
+          </div>
+
+          <a href="./reality-check.html" class="primary-btn full-btn">Check abgeschlossen</a>
+        </div>
+
+        <!-- GOAL -->
+        <div class="panel large-panel">
+          <div class="panel-header">
+            <div>
+              <span class="tag">Persönliches Ziel</span>
+              <h2>Dein Fokus</h2>
+            </div>
+          </div>
+
+          <p class="goal-text" id="personalGoal">
+            Ich möchte bewusster träumen und meine Traumzeichen erkennen.
+          </p>
+
+          <a href="./profile.html" class="secondary-btn full-btn">Ziele bearbeiten</a>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <script src="./js/dashboard.js"></script>
+</body>
+</html>

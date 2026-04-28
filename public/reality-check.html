@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reality Checks | LucidDreams</title>
+
+  <link rel="stylesheet" href="./css/reality-checks.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <main class="reality-page">
+
+    <header class="topbar">
+      <div>
+        <p class="welcome">Reality Checks</p>
+        <h1>Bewusst prüfen, ob du wach bist</h1>
+      </div>
+
+      <div class="topbar-actions">
+        <a href="./dashboard.html" class="ghost-btn">Dashboard</a>
+        <a href="./profile.html" class="ghost-btn">Ziele anpassen</a>
+      </div>
+    </header>
+
+    <section class="reality-layout">
+
+      <section class="check-card">
+        <span class="tag">Jetzt</span>
+
+        <h2>Bist du gerade wirklich wach?</h2>
+
+        <p class="intro-text">
+          Nimm dir kurz 20 Sekunden. Ein Reality Check funktioniert nur,
+          wenn du wirklich zweifelst und nicht einfach automatisch klickst.
+        </p>
+
+        <div class="question-list">
+          <div class="question-item">
+            <span>01</span>
+            <p>Wie bist du hierher gekommen?</p>
+          </div>
+
+          <div class="question-item">
+            <span>02</span>
+            <p>Was hast du vor 10 Minuten gemacht?</p>
+          </div>
+
+          <div class="question-item">
+            <span>03</span>
+            <p>Ist irgendetwas an deiner Umgebung unlogisch?</p>
+          </div>
+
+          <div class="question-item">
+            <span>04</span>
+            <p>Kannst du durch die geschlossene Nase atmen?</p>
+          </div>
+        </div>
+
+        <button type="button" class="complete-btn" id="completeCheckBtn">
+          Reality Check abgeschlossen
+        </button>
+      </section>
+
+      <aside class="side-panel">
+
+        <div class="progress-card">
+          <span class="tag">Heute</span>
+          <h2>Dein Fortschritt</h2>
+
+          <div class="progress-number">
+            <span id="checksDone">0</span>
+            <small>/</small>
+            <span id="checksGoal">8</span>
+          </div>
+
+          <p id="progressText">
+            Noch kein Reality Check abgeschlossen.
+          </p>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="reminder-card">
+          <span class="tag">Benachrichtigungen</span>
+          <h2>Reminder-System</h2>
+
+          <p>
+            Später bekommst du über dein Handy Erinnerungen wie:
+          </p>
+
+          <div class="notification-preview">
+            <strong>LucidDreams</strong>
+            <span>Bist du gerade wirklich wach?</span>
+          </div>
+
+          <p class="small-note">
+            Für echte Handy-Benachrichtigungen brauchen wir später eine PWA mit Push Notifications.
+            Aktuell speichern wir erst einmal deinen Tagesfortschritt lokal im Browser.
+          </p>
+        </div>
+
+      </aside>
+
+    </section>
+
+  </main>
+
+  <script src="./js/reality-checks.js"></script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traumarchiv | LucidDreams</title>
+
+  <link rel="stylesheet" href="./css/dream-archive.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <main class="main">
+
+      <header class="topbar">
+        <div>
+          <p class="welcome">Traumarchiv</p>
+          <h1>Deine Träume als Übersicht</h1>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="./dashboard.html" class="ghost-btn">Dashboard</a>
+          <a href="./dream-journal.html" class="add-dream-btn">+ Neuer Traum</a>
+        </div>
+      </header>
+
+      <button type="button" class="filter-toggle" id="filterToggle">
+        Filter anzeigen
+      </button>
+
+      <section class="archive-filters hidden" id="archiveFilters">
+
+        <div class="filter-group">
+          <label for="searchInput">Name / Text</label>
+          <input type="text" id="searchInput" placeholder="Traum suchen...">
+        </div>
+
+        <div class="filter-group">
+          <label for="typeFilter">Traumart</label>
+          <select id="typeFilter">
+            <option value="Alle">Alle</option>
+            <option value="Luzider Traum">Luzider Traum</option>
+            <option value="Kurzer Traum">Kurzer Traum</option>
+            <option value="Normaler Traum">Normaler Traum</option>
+            <option value="Albtraum">Albtraum</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="dateFilter">Datum</label>
+          <input type="date" id="dateFilter">
+        </div>
+
+        <button type="button" class="reset-filters" id="resetFilters">
+          Filter zurücksetzen
+        </button>
+
+      </section>
+
+      <section class="board" id="board"></section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="dream-modal-overlay" id="dreamModalOverlay">
+    <div class="dream-modal" id="dreamModal">
+
+      <div class="modal-actions">
+        <button class="modal-menu-btn" id="modalMenuBtn">⋮</button>
+        <button class="modal-close" id="closeModalBtn">×</button>
+
+        <div class="modal-menu hidden" id="modalMenu">
+          <button type="button" id="editDreamBtn">Bearbeiten</button>
+          <button type="button" id="deleteDreamBtn" class="danger">Löschen</button>
+        </div>
+      </div>
+
+      <div class="modal-view" id="modalView">
+        <div class="modal-top">
+          <p class="modal-category" id="modalCategory">Kategorie</p>
+          <h2 id="modalTitle">Traumtitel</h2>
+          <p class="modal-date" id="modalDate">Datum</p>
+        </div>
+
+        <div class="modal-meta" id="modalMeta"></div>
+
+        <div class="modal-section">
+          <h3>Beschreibung</h3>
+          <p id="modalDescription"></p>
+        </div>
+
+        <div class="modal-section">
+          <h3>Traumzeichen</h3>
+          <div class="modal-tags" id="modalTags"></div>
+        </div>
+
+        <div class="modal-section">
+          <h3>Notizen / Erkenntnisse</h3>
+          <p id="modalNotes"></p>
+        </div>
+      </div>
+
+      <!-- EDIT FORM -->
+      <div class="edit-form hidden" id="editForm">
+        <h2>Traum bearbeiten</h2>
+
+        <div class="edit-group">
+          <label for="editTitle">Titel</label>
+          <input type="text" id="editTitle">
+        </div>
+
+        <div class="edit-row">
+          <div class="edit-group">
+            <label for="editDate">Datum</label>
+            <input type="date" id="editDate">
+          </div>
+
+          <div class="edit-group">
+            <label for="editClarity">Traumart</label>
+            <select id="editClarity">
+              <option>Normaler Traum</option>
+              <option>Luzid</option>
+              <option>Albtraum</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="edit-row">
+          <div class="edit-group">
+            <label for="editMood">Stimmung</label>
+            <select id="editMood">
+              <option>Neutral</option>
+              <option>Fasziniert</option>
+              <option>Glücklich</option>
+              <option>Ängstlich</option>
+              <option>Verwirrt</option>
+              <option>Aufgeregt</option>
+            </select>
+          </div>
+
+          <div class="edit-group">
+            <label for="editSleep">Schlafqualität</label>
+            <select id="editSleep">
+              <option>Gut</option>
+              <option>Mittel</option>
+              <option>Schlecht</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="edit-group">
+          <label for="editDescription">Beschreibung</label>
+          <textarea id="editDescription"></textarea>
+        </div>
+
+        <div class="edit-group">
+          <label for="editNotes">Notizen</label>
+          <textarea id="editNotes"></textarea>
+        </div>
+
+        <div class="edit-actions">
+          <button type="button" class="cancel-edit-btn" id="cancelEditBtn">
+            Abbrechen
+          </button>
+
+          <button type="button" class="save-edit-btn" id="saveEditBtn">
+            Änderungen speichern
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="./js/dream-archive.js"></script>
+</body>
+</html>
