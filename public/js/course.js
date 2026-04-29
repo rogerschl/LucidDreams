@@ -104,9 +104,10 @@ const lessons = [
     tag: "Lektion 1",
     content: `
       <p>
-        Dein Traumtagebuch ist eines der wichtigsten Werkzeuge, wenn du luzides Träumen lernen willst.
-        Es geht nicht nur darum, Träume aufzuschreiben, sondern deinem Gehirn zu zeigen:
-        „Meine Träume sind wichtig.“
+        Direkt nach dem Aufwachen fällt es deinem Gehirn am leichtesten, sich an den Traum zu erinnern.
+        Sobald sich das Gehirn mit etwas anderem beschäftigt, rutscht der Traum vom Kurzzeitig gedächtnis ins Unterbewusstsein
+        oder wird sogar komplett vergessen. Deswegen ist es wichtig so schnell wie möglich nach dem Aufwachen deine Träume zu dokumentieren oder
+        probieren sich daran zu erinnern, um die Träume somit ins Langzeitsgedächtnis zu übertragen.
       </p>
 
       <p>
