@@ -51,82 +51,57 @@ const lessons = [
       <p>
         Wenn du dich nicht an deine Träume erinnerst, merkst du auch nicht,
         ob du luzid warst. Deshalb kommt Traumerinnerung vor allen Techniken.
+        Der schönste Klartraum bringt dir nichts, wenn du dich am Ende nicht einmal
+        mehr daran erinnerst.
       </p>
 
       <p>
-        Je öfter du deine Träume notierst, desto mehr signalisierst du deinem Gehirn:
-        „Träume sind wichtig.“ Dadurch erinnerst du dich mit der Zeit häufiger und klarer.
-      </p>
-
-      <p>
-        Beschäftige dich auch abends kurz mit dem Thema Träumen. Lies vielleicht
-        einen alten Eintrag in deinem Traumtagebuch oder sage dir vor dem Einschlafen
-        immer wieder:
+        Grundlegend kann man sagen, dass es auch bei der Traumerinnerung darum geht,
+        es für dein Gehirn wichtig zu machen. Je wichtiger und präsenter Träume in deinem
+        Leben sind, desto leichter fällt es dir dich daran zu erinnern.  
       </p>
 
       <div class="lesson-box">
         <h3>Abendliche Intention</h3>
         <p>
-          „Ich erinnere mich an meinen Traum.“
+          Mache Träume in deinem Leben wichtig. Je wichtiger du sie machst, desto klarer wirst du dich erinnern.
         </p>
       </div>
 
-      <p>
-        Dein Gehirn wird dann mit dieser Priorität einschlafen. Genau das kann bewirken,
-        dass du dich am nächsten Morgen klarer an deine Träume erinnerst.
-      </p>
     `
   },
   {
     id: 2,
-    title: "Morgenroutine",
-    tag: "Lektion 2",
+    title: "Traumerinnerung verbessern",
+    tag: "Lektion 1",
     content: `
       <p>
-        Direkt nach dem Aufwachen sind Traumerinnerungen noch sehr empfindlich.
-        Wenn du sofort aufs Handy schaust oder direkt aufstehst, verschwinden sie oft schnell.
+        Wie wir in der vorherigen Lektion bereits besprochen haben, geht es in diesem
+        Segement um die Wichtigkeit.
       </p>
 
-      <p>
-        Deshalb brauchst du eine einfache Morgenroutine:
-      </p>
+      <div class="lesson-box">      
+      <h3>
+        Es gibt viele Möglichkeiten, Träume wichtiger zu machen, zum Beispiel:
+      </h3>
+      
 
       <ol>
-        <li>Nicht sofort bewegen.</li>
-        <li>Augen kurz geschlossen halten.</li>
-        <li>Frage dich: „Was war gerade eben?“</li>
-        <li>Gefühle, Bilder oder Orte sammeln.</li>
-        <li>Sofort notieren.</li>
+        <li>Traumtagebuch führen, was das genau ist erfährst du später in diesem Kurs.</li>
+        <li>Mit Freunden und Familie über seine Träume sprechen, oder sie nach ihren eigenen fragen.</li>
+        <li></li>
+        <li></li>
       </ol>
-
-      <p>
-        Auch ein einzelnes Bild zählt. Es muss kein kompletter Traum sein.
-        Manchmal reicht schon ein Gefühl, ein Ort oder eine kurze Szene.
-      </p>
-
-      <p>
-        Grundlegend kann man sagen: Je mehr du dich mit dem Thema Träumen beschäftigst,
-        desto wichtiger wird es für dein Gehirn. Dein Gehirn arbeitet mit Wiederholung
-        und Mustererkennung.
-      </p>
-
-      <p>
-        Führe dein Traumtagebuch, rede vielleicht mit Freunden über deine Träume und mache
-        es zu einem wichtigen Bestandteil deines Lebens.
-      </p>
-
-      <div class="lesson-box">
-        <h3>Merksatz</h3>
-        <p>
-          Erst erinnern, dann bewegen.
-        </p>
       </div>
+
+    
+
     `
   },
   {
     id: 3,
-    title: "Traumtagebuch richtig nutzen",
-    tag: "Lektion 3",
+    title: "Morgenroutine",
+    tag: "Lektion 1",
     content: `
       <p>
         Dein Traumtagebuch ist eines der wichtigsten Werkzeuge, wenn du luzides Träumen lernen willst.
@@ -163,8 +138,8 @@ const lessons = [
   },
   {
     id: 4,
-    title: "Traumzeichen erkennen",
-    tag: "Lektion 4",
+    title: "Abendroutine",
+    tag: "Lektion 1",
     content: `
       <p>
         Traumzeichen sind Dinge, die in deinen Träumen immer wieder vorkommen.
@@ -207,8 +182,8 @@ const lessons = [
   },
   {
     id: 5,
-    title: "Reality Checks verstehen",
-    tag: "Lektion 5",
+    title: "Traumtagebuch erklärung",
+    tag: "Lektion 2",
     content: `
       <p>
         Reality Checks sind kurze Überprüfungen, ob du gerade wach bist oder träumst.
@@ -247,6 +222,29 @@ const lessons = [
         </p>
       </div>
     `
+  },
+  {
+    id: 5,
+    title: "Traumtagebuch erklärung",
+    tag: "Lektion 2",
+    content: `
+    <p>
+      Das Traumtagebuch bietet dir ein Archiv deiner ganzer erinnerten Träume.
+      Es hilft dir Träume für dein Gehirn wichtiger zu machen und 
+      sich besser daran zu erinnern.
+    </p>
+
+    <p>
+      Durch da niederschreiben deiner Träume wird es dir außerdem leichter Fallen,
+      gewisse Muster zu erkennen, die dir später dabei helfen, im Traum luzide zu werden.
+    </p>
+     <div class="lesson-box">
+        <h3>Merksatz</h3>
+        <p>
+          Dein Traumtagebuch ist nicht nur Erinnerung, sondern Training für dein Bewusstsein.
+        </p>
+      </div>
+      `
   }
 ];
 
