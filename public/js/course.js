@@ -143,14 +143,14 @@ const lessons = [
     tag: "Lektion 1",
     content: `
       <p>
-        Traumzeichen sind Dinge, die in deinen Träumen immer wieder vorkommen.
-        Das können Orte, Personen, Situationen, Gefühle oder seltsame Ereignisse sein.
+        Vor dem schlafen gehen ist es besonders wichtig, sich mit dem Thema Träume zu beschäftigen. Denn
+        dein Gehirn nimmt das, womit du dich vor dem Schlafen beschäftigst, mit in dem Traum. Deshalb Träumen wird auch 
+        so oft vor einer wichtigen Prüfung davon.
       </p>
 
       <p>
-        Wenn du deine Traumzeichen kennst, hast du einen riesigen Vorteil. Denn sobald so ein
-        Zeichen im Traum wieder auftaucht, kann es dich daran erinnern:
-        „Moment, das kenne ich doch aus meinen Träumen.“
+        Deshalb reicht es hier schon neben den Tipps zur Schlafqualität, sich vor dem Schlafen zu suggerieren "Ich erinnere mich an meien Träume",
+        somit wird vor dem schlafen gehen die richtige Intention gesetzt, um sich am nächsten Morgen besser an die Träume zu erinnern.
       </p>
 
       <p>
