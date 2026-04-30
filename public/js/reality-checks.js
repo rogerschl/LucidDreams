@@ -4,31 +4,89 @@ const checksGoal = document.getElementById("checksGoal");
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 
-function getProfile() {
-  return JSON.parse(localStorage.getItem("profile")) || {
-    name: "Roger",
-    realityGoal: 8,
-    dreamGoal: 5
+let currentUser = null;
+let currentProfile = null;
+
+async function protectPage() {
+  const { data, error } = await lucidSupabase.auth.getSession();
+
+  if (error || !data.session) {
+    window.location.href = "./login.html";
+    return null;
+  }
+
+  return data.session.user;
+}
+
+async function loadProfileFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .single();
+
+  if (error) {
+    console.error("Profil konnte nicht geladen werden:", error);
+
+    return {
+      reality_goal: 8
+    };
+  }
+
+  return data;
+}
+
+function getTodayRange() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString()
   };
 }
 
-function getTodayKey() {
-  const today = new Date().toISOString().split("T")[0];
-  return `realityChecks_${today}`;
+async function getTodayChecks() {
+  const { start, end } = getTodayRange();
+
+  const { count, error } = await lucidSupabase
+    .from("reality_checks")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", currentUser.id)
+    .gte("checked_at", start)
+    .lte("checked_at", end);
+
+  if (error) {
+    console.error("Reality Checks konnten nicht geladen werden:", error);
+    return 0;
+  }
+
+  return count || 0;
 }
 
-function getTodayChecks() {
-  return Number(localStorage.getItem(getTodayKey())) || 0;
+async function saveRealityCheck() {
+  const { error } = await lucidSupabase
+    .from("reality_checks")
+    .insert({
+      user_id: currentUser.id,
+      note: "Reality Check abgeschlossen"
+    });
+
+  if (error) {
+    console.error("Reality Check konnte nicht gespeichert werden:", error);
+    alert("Reality Check konnte nicht gespeichert werden.");
+    return false;
+  }
+
+  return true;
 }
 
-function saveTodayChecks(count) {
-  localStorage.setItem(getTodayKey(), String(count));
-}
-
-function updateProgress() {
-  const profile = getProfile();
-  const goal = Number(profile.realityGoal) || 8;
-  const done = getTodayChecks();
+async function updateProgress() {
+  const goal = Number(currentProfile.reality_goal) || 8;
+  const done = await getTodayChecks();
 
   checksGoal.textContent = goal;
   checksDone.textContent = done;
@@ -53,17 +111,27 @@ function updateProgress() {
   }
 }
 
-completeCheckBtn.addEventListener("click", () => {
-  const profile = getProfile();
-  const goal = Number(profile.realityGoal) || 8;
-  const done = getTodayChecks();
+completeCheckBtn.addEventListener("click", async () => {
+  const goal = Number(currentProfile.reality_goal) || 8;
+  const done = await getTodayChecks();
 
-  if (done >= goal) {
-    return;
+  if (done >= goal) return;
+
+  const saved = await saveRealityCheck();
+
+  if (saved) {
+    await updateProgress();
   }
-
-  saveTodayChecks(done + 1);
-  updateProgress();
 });
 
-updateProgress();
+async function initRealityCheck() {
+  currentUser = await protectPage();
+
+  if (!currentUser) return;
+
+  currentProfile = await loadProfileFromSupabase();
+
+  await updateProgress();
+}
+
+initRealityCheck();

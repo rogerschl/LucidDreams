@@ -1,3 +1,14 @@
+async function protectPage() {
+  const { data, error } = await lucidSupabase.auth.getSession();
+
+  if (error || !data.session) {
+    window.location.href = "./login.html";
+    return null;
+  }
+
+  return data.session.user;
+}
+
 const dashboardGreeting = document.getElementById("dashboardGreeting");
 const profileName = document.getElementById("profileName");
 const profileInitial = document.getElementById("profileInitial");
@@ -9,34 +20,91 @@ const weeklyDreamProgress = document.getElementById("weeklyDreamProgress");
 const recentDreamList = document.getElementById("recentDreamList");
 const personalGoal = document.getElementById("personalGoal");
 
-function getProfile() {
-  return JSON.parse(localStorage.getItem("profile")) || {
-    name: "Roger",
-    email: "",
-    password: "",
-    realityGoal: 8,
-    dreamGoal: 5,
-    personalGoal: "Ich möchte bewusster träumen und meine Traumzeichen erkennen."
+const dashboardCoursePercent = document.getElementById("dashboardCoursePercent");
+const dashboardCourseProgress = document.getElementById("dashboardCourseProgress");
+const dashboardNextLessonNumber = document.getElementById("dashboardNextLessonNumber");
+const dashboardNextLessonTitle = document.getElementById("dashboardNextLessonTitle");
+const dashboardNextLessonText = document.getElementById("dashboardNextLessonText");
+
+const app = document.querySelector(".app");
+const sidebarToggle = document.getElementById("sidebarToggle");
+
+let currentUser = null;
+let currentProfile = null;
+let dreams = [];
+
+async function loadProfileFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("profiles")
+    .select("*")
+    .eq("id", currentUser.id)
+    .single();
+
+  if (error) {
+    console.error("Profil konnte nicht geladen werden:", error);
+
+    return {
+      display_name: "User",
+      email: currentUser.email,
+      reality_goal: 8,
+      dream_goal: 5,
+      personal_goal: "Ich möchte bewusster träumen und meine Traumzeichen erkennen."
+    };
+  }
+
+  return data;
+}
+
+async function loadDreamsFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("dreams")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .eq("archived", false)
+    .order("dream_date", { ascending: false });
+
+  if (error) {
+    console.error("Träume konnten nicht geladen werden:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+function getTodayRange() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString()
   };
 }
 
-function getDreams() {
-  return JSON.parse(localStorage.getItem("dreams")) || [];
-}
+async function getTodayRealityChecks() {
+  const { start, end } = getTodayRange();
 
-function getTodayKey() {
-  const today = new Date().toISOString().split("T")[0];
-  return `realityChecks_${today}`;
-}
+  const { count, error } = await lucidSupabase
+    .from("reality_checks")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", currentUser.id)
+    .gte("checked_at", start)
+    .lte("checked_at", end);
 
-function getTodayRealityChecks() {
-  return Number(localStorage.getItem(getTodayKey())) || 0;
+  if (error) {
+    console.error("Reality Checks konnten nicht geladen werden:", error);
+    return 0;
+  }
+
+  return count || 0;
 }
 
 function getStartOfWeek(date) {
   const currentDate = new Date(date);
   const day = currentDate.getDay();
-
   const diffToMonday = day === 0 ? -6 : 1 - day;
 
   currentDate.setDate(currentDate.getDate() + diffToMonday);
@@ -68,16 +136,13 @@ function isDateInCurrentWeek(dateString) {
 }
 
 function getWeeklyDreamCount() {
-  const dreams = getDreams();
-
   return dreams.filter((dream) => {
-    return isDateInCurrentWeek(dream.date);
+    return isDateInCurrentWeek(dream.dream_date);
   }).length;
 }
 
 function updateProfile() {
-  const profile = getProfile();
-  const name = profile.name || "Roger";
+  const name = currentProfile.display_name || "User";
 
   if (dashboardGreeting) {
     dashboardGreeting.innerHTML = `
@@ -95,20 +160,18 @@ function updateProfile() {
 
   if (personalGoal) {
     personalGoal.textContent =
-      profile.personalGoal || "Ich möchte bewusster träumen und meine Traumzeichen erkennen.";
+      currentProfile.personal_goal ||
+      "Ich möchte bewusster träumen und meine Traumzeichen erkennen.";
   }
 }
 
 function updateDreamStats() {
-  const profile = getProfile();
-  const dreams = getDreams();
-
   const lucidCount = dreams.filter((dream) => {
-    return dream.clarity === "Luzid";
+    return dream.is_lucid === true || dream.dream_type === "Luzider Traum";
   }).length;
 
   const weeklyDreams = getWeeklyDreamCount();
-  const weeklyDreamGoal = Number(profile.dreamGoal) || 5;
+  const weeklyDreamGoal = Number(currentProfile.dream_goal) || 5;
 
   if (totalDreams) {
     totalDreams.textContent = dreams.length;
@@ -123,11 +186,9 @@ function updateDreamStats() {
   }
 }
 
-function updateRealityStats() {
-  const profile = getProfile();
-
-  const doneToday = getTodayRealityChecks();
-  const dailyGoal = Number(profile.realityGoal) || 8;
+async function updateRealityStats() {
+  const doneToday = await getTodayRealityChecks();
+  const dailyGoal = Number(currentProfile.reality_goal) || 8;
 
   if (realityProgress) {
     realityProgress.textContent = `${doneToday}/${dailyGoal}`;
@@ -135,8 +196,6 @@ function updateRealityStats() {
 }
 
 function renderRecentDreams() {
-  const dreams = getDreams();
-
   if (!recentDreamList) return;
 
   recentDreamList.innerHTML = "";
@@ -148,28 +207,65 @@ function renderRecentDreams() {
     return;
   }
 
-  dreams
-    .slice()
-    .reverse()
-    .slice(0, 3)
-    .forEach((dream) => {
-      const dreamItem = document.createElement("div");
-      dreamItem.classList.add("dream-item");
+  dreams.slice(0, 3).forEach((dream) => {
+    const dreamItem = document.createElement("div");
+    dreamItem.classList.add("dream-item");
 
-      if (dream.clarity === "Luzid") {
-        dreamItem.classList.add("lucid");
-      }
+    if (dream.is_lucid === true || dream.dream_type === "Luzider Traum") {
+      dreamItem.classList.add("lucid");
+    }
 
-      dreamItem.innerHTML = `
-        <h3>${dream.title || "Ohne Titel"}</h3>
-        <p>${dream.clarity || "Normaler Traum"} · ${dream.mood || "Neutral"} · ${dream.date || "Kein Datum"}</p>
-      `;
+    dreamItem.innerHTML = `
+      <h3>${dream.title || "Ohne Titel"}</h3>
+      <p>${dream.dream_type || "Normaler Traum"} · ${dream.mood || "Neutral"} · ${dream.dream_date || "Kein Datum"}</p>
+    `;
 
-      recentDreamList.appendChild(dreamItem);
-    });
+    recentDreamList.appendChild(dreamItem);
+  });
 }
 
-updateProfile();
-updateDreamStats();
-updateRealityStats();
-renderRecentDreams();
+function updateCourseDashboard() {
+  if (dashboardCoursePercent) {
+    dashboardCoursePercent.textContent = "0%";
+  }
+
+  if (dashboardCourseProgress) {
+    dashboardCourseProgress.style.width = "0%";
+  }
+
+  if (dashboardNextLessonNumber) {
+    dashboardNextLessonNumber.textContent = "—";
+  }
+
+  if (dashboardNextLessonTitle) {
+    dashboardNextLessonTitle.textContent = "Noch keine Lektion geladen";
+  }
+
+  if (dashboardNextLessonText) {
+    dashboardNextLessonText.textContent =
+      "Die Kursinhalte werden später über den Adminbereich erstellt.";
+  }
+}
+
+if (sidebarToggle && app) {
+  sidebarToggle.addEventListener("click", () => {
+    app.classList.toggle("sidebar-collapsed");
+  });
+}
+
+async function initDashboard() {
+  currentUser = await protectPage();
+
+  if (!currentUser) return;
+
+  currentProfile = await loadProfileFromSupabase();
+  dreams = await loadDreamsFromSupabase();
+
+  updateProfile();
+  updateDreamStats();
+  await updateRealityStats();
+  renderRecentDreams();
+  updateCourseDashboard();
+}
+
+initDashboard();

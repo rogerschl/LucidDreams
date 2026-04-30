@@ -22,13 +22,17 @@
         LucidDreams
       </a>
 
+      <button class="sidebar-toggle" id="sidebarToggle" type="button">
+            ☰
+      </button>
+
       <nav class="sidebar-nav">
         <a href="./dashboard.html" class="active">Dashboard</a>
         <a href="./dream-journal.html">Traum hinzufügen</a>
         <a href="./dream-archive.html">Traumtagebuch</a>
         <a href="./course.html">Lerninhalte</a>
         <a href="./reality-check.html">Reality Checks</a>
-        <a href="./statistics.html">Statistiken</a>
+        
       </nav>
 
       <div class="sidebar-footer">
@@ -59,9 +63,8 @@
           <span class="tag">Heute</span>
 
           <h2 id="dashboardGreeting">
-         !<span id="dashboardNameHighlight">Roger</span>, hast du dich heute schon
-             an einen Traum erinnert?
-          </h2>
+  Hallo <span id="dashboardNameHighlight">Roger</span>! Hast du dich heute schon an einen Traum erinnert?
+</h2>
 
           <p>
             Notiere direkt nach dem Aufwachen alles, woran du dich erinnerst.
@@ -70,7 +73,7 @@
 
           <div class="hero-actions">
             <a href="./dream-journal.html" class="primary-btn">+ Traum eintragen</a>
-            <a href="./reality-check.html" class="secondary-btn">Reality Check machen</a>
+            <a href="./dream-archive.html" class="secondary-btn">zum Traumtagebuch</a>
           </div>
         </div>
 
@@ -108,33 +111,34 @@
       <!-- MAIN GRID -->
       <section class="content-grid">
 
-        <!-- COURSE -->
-        <div class="panel large-panel">
-          <div class="panel-header">
-            <div>
-              <span class="tag">Kurs</span>
-              <h2>Dein Lernpfad</h2>
-            </div>
-            <p>37%</p>
-          </div>
+       <!-- COURSE -->
+<div class="panel large-panel">
+  <div class="panel-header">
+    <div>
+      <span class="tag">Kurs</span>
+      <h2>Dein Lernpfad</h2>
+    </div>
 
-          <div class="progress-bar">
-            <div class="progress-fill"></div>
-          </div>
+    <p id="dashboardCoursePercent">0%</p>
+  </div>
 
-          <div class="course-list">
-            <div class="course-item done">
-              <span>01</span>
-              
-              <div>
-              <!-- TODO: Fortschritt und letzte Lektion werden angezeigt, wenn alles fertig 100% anzeigen, Glückwünsche und sowas wie mehr Inhalte folgen noch-->
-                <h3>Zur letzten Lektion</h3>
-                <p>Mache Weiter mit deinem Training</p>
-              </div>
-            </div>
-            </div>
-          <a href="./course.html" class="primary-btn full-btn">Nächste Lektion starten</a>
-        </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="dashboardCourseProgress"></div>
+  </div>
+
+  <div class="next-lesson-card">
+    <span id="dashboardNextLessonNumber">00</span>
+
+    <div>
+      <h3 id="dashboardNextLessonTitle">Was dich erwartet</h3>
+      <p id="dashboardNextLessonText">Starte deinen Kurs.</p>
+    </div>
+  </div>
+
+  <a href="./course.html" class="primary-btn full-btn">
+    Nächste Lektion starten
+  </a>
+</div>
 
         <!-- DREAM JOURNAL -->
         <div class="panel">
@@ -173,6 +177,11 @@
     </main>
   </div>
 
+  
+<!-- Supabase Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase-client.js"></script>
   <script src="./js/dashboard.js"></script>
+
 </body>
 </html>

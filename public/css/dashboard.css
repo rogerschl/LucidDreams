@@ -40,8 +40,13 @@ body::before {
   position: relative;
   z-index: 2;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100vh;
+  transition: 0.25s ease;
+}
+
+.app.sidebar-collapsed {
+  grid-template-columns: 92px minmax(0, 1fr);
 }
 
 /* SIDEBAR */
@@ -113,6 +118,98 @@ body::before {
   color: rgba(255,255,255,0.68);
 }
 
+.sidebar-toggle {
+  width: 46px;
+  height: 46px;
+  margin-bottom: 24px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.sidebar-toggle:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-2px);
+}
+
+/* Sidebar eingeklappt */
+.app.sidebar-collapsed .sidebar {
+  align-items: center;
+  padding: 32px 14px;
+}
+
+.app.sidebar-collapsed .sidebar-logo {
+  font-size: 0;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #7b5cff, #b06cff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app.sidebar-collapsed .sidebar-logo::after {
+  content: "L";
+  font-size: 22px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.app.sidebar-collapsed .sidebar-nav {
+  width: 100%;
+  align-items: center;
+}
+
+.app.sidebar-collapsed .sidebar-nav a {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+}
+
+.app.sidebar-collapsed .sidebar-nav a::first-letter {
+  font-size: 16px;
+}
+
+.app.sidebar-collapsed .sidebar-nav a:nth-child(1)::after {
+  content: "D";
+  font-size: 16px;
+}
+
+.app.sidebar-collapsed .sidebar-nav a:nth-child(2)::after {
+  content: "+";
+  font-size: 22px;
+}
+
+.app.sidebar-collapsed .sidebar-nav a:nth-child(3)::after {
+  content: "T";
+  font-size: 16px;
+}
+
+.app.sidebar-collapsed .sidebar-nav a:nth-child(4)::after {
+  content: "K";
+  font-size: 16px;
+}
+
+.app.sidebar-collapsed .sidebar-nav a:nth-child(5)::after {
+  content: "R";
+  font-size: 16px;
+}
+
+.app.sidebar-collapsed .sidebar-footer {
+  display: none;
+}
+/* /Sidebar eingeklappt */
 /* MAIN */
 
 .main {
@@ -192,7 +289,6 @@ body::before {
   position: relative;
   overflow: hidden;
   width: 98%;
-  max-width: 1200px;
   display: grid;
   grid-template-columns: minmax(0,1fr) 320px;
   align-items: center;
@@ -346,7 +442,7 @@ body::before {
   grid-template-columns: repeat(3, minmax(0,1fr));
   gap: 24px;
   width: 100%;
-  max-width: 100%;
+  max-width: 98%;
   min-width: 0;
 }
 

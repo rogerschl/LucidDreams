@@ -23,46 +23,52 @@
     <section class="register-wrapper">
       <div class="auth-glow"></div>
 
-      <form class="auth-card">
+      <form class="auth-card register-card" id="registerForm">
         <span class="section-tag">Starte deine Reise</span>
 
         <h2>Registrieren</h2>
 
         <p class="auth-subtitle">
-          Erstelle deinen Account und beginne, deine Träume bewusst zu erleben.
+          Erstelle deinen Account und beginne mit deinem Traumtagebuch.
         </p>
 
         <div class="input-group">
           <label for="name">Name</label>
-          <input type="text" id="name" placeholder="Dein Name">
+          <input 
+            type="text" 
+            id="name" 
+            placeholder="Dein Name" 
+            required
+          >
         </div>
 
         <div class="input-group">
           <label for="email">E-Mail</label>
-          <input type="email" id="email" placeholder="deine@email.de">
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="deine@email.de" 
+            required
+          >
         </div>
 
         <div class="input-group">
           <label for="password">Passwort</label>
-          <input type="password" id="password" placeholder="Mindestens 8 Zeichen">
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Mindestens 6 Zeichen" 
+            required
+            minlength="6"
+          >
         </div>
 
-        <div class="input-group">
-          <label for="password-repeat">Passwort wiederholen</label>
-          <input type="password" id="password-repeat" placeholder="Passwort bestätigen">
-        </div>
-
-        <label class="checkbox-row">
-          <input type="checkbox">
-          <span>Ich akzeptiere die Nutzungsbedingungen und Datenschutzrichtlinie.</span>
-        </label>
-
-        <a href="dashboard.html" class="auth-button">
+        <button type="submit" class="auth-button">
           Account erstellen
-        </a>
+        </button>
 
         <p class="auth-switch">
-          Du hast schon einen Account?
+          Bereits einen Account?
           <a href="./login.html">Anmelden</a>
         </p>
       </form>
@@ -70,5 +76,8 @@
 
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase-client.js"></script>
+  <script src="./js/register.js"></script>
 </body>
 </html>

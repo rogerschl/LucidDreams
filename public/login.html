@@ -23,7 +23,7 @@
     <section class="login-wrapper">
       <div class="auth-glow"></div>
 
-      <form class="auth-card login-card">
+      <form class="auth-card login-card" id="loginForm">
         <span class="section-tag">Willkommen zurück</span>
 
         <h2>Anmelden</h2>
@@ -34,26 +34,36 @@
 
         <div class="input-group">
           <label for="email">E-Mail</label>
-          <input type="email" id="email" placeholder="deine@email.de">
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="deine@email.de" 
+            required
+          >
         </div>
 
         <div class="input-group">
           <label for="password">Passwort</label>
-          <input type="password" id="password" placeholder="Dein Passwort">
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Dein Passwort" 
+            required
+          >
         </div>
 
         <div class="login-options">
           <label class="small-checkbox">
-            <input type="checkbox">
+            <input type="checkbox" id="rememberMe">
             <span>Eingeloggt bleiben</span>
           </label>
 
           <a href="#" class="forgot-link">Passwort vergessen?</a>
         </div>
 
-        <a href="dashboard.html" class="auth-button">
+        <button type="submit" class="auth-button">
           Einloggen
-        </a>
+        </button>
 
         <p class="auth-switch">
           Noch keinen Account?
@@ -64,5 +74,8 @@
 
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase-client.js"></script>
+  <script src="./js/login.js"></script>
 </body>
 </html>

@@ -36,7 +36,9 @@ const editNotes = document.getElementById("editNotes");
 const saveEditBtn = document.getElementById("saveEditBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
 
-let currentDreamIndex = null;
+let currentUser = null;
+let dreams = [];
+let currentDream = null;
 
 const columns = [
   { key: "Luzider Traum", className: "column-lucid" },
@@ -45,18 +47,64 @@ const columns = [
   { key: "Albtraum", className: "column-nightmare" }
 ];
 
-function getDreams() {
-  return JSON.parse(localStorage.getItem("dreams")) || [];
+async function protectPage() {
+  const { data, error } = await lucidSupabase.auth.getSession();
+
+  if (error || !data.session) {
+    window.location.href = "./login.html";
+    return null;
+  }
+
+  return data.session.user;
 }
 
-function saveDreams(dreams) {
-  localStorage.setItem("dreams", JSON.stringify(dreams));
+function normalizeDream(dream) {
+  const tags =
+    dream.dream_dream_signs?.map((link) => link.dream_signs?.name).filter(Boolean) || [];
+
+  return {
+    id: dream.id,
+    title: dream.title,
+    date: dream.dream_date,
+    clarity: dream.dream_type,
+    mood: dream.mood,
+    sleep: dream.sleep_quality,
+    description: dream.description,
+    notes: dream.notes,
+    isLucid: dream.is_lucid,
+    tags: tags
+  };
+}
+
+async function loadDreams() {
+  const { data, error } = await lucidSupabase
+    .from("dreams")
+    .select(`
+      *,
+      dream_dream_signs (
+        dream_signs (
+          id,
+          name
+        )
+      )
+    `)
+    .eq("user_id", currentUser.id)
+    .eq("archived", false)
+    .order("dream_date", { ascending: false });
+
+  if (error) {
+    console.error("Träume konnten nicht geladen werden:", error);
+    board.innerHTML = `<p class="empty-column">Träume konnten nicht geladen werden.</p>`;
+    return;
+  }
+
+  dreams = data.map(normalizeDream);
 }
 
 function getDreamCategory(dream) {
   if (!dream) return "Normaler Traum";
 
-  if (dream.clarity === "Luzid") return "Luzider Traum";
+  if (dream.clarity === "Luzider Traum" || dream.clarity === "Luzid") return "Luzider Traum";
   if (dream.clarity === "Albtraum") return "Albtraum";
 
   const descriptionLength = (dream.description || "").trim().length;
@@ -73,8 +121,8 @@ function truncateText(text, maxLength = 90) {
   return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 }
 
-function openDreamModal(dream, index) {
-  currentDreamIndex = index;
+function openDreamModal(dream) {
+  currentDream = dream;
 
   modalMenu.classList.add("hidden");
   editForm.classList.add("hidden");
@@ -119,10 +167,10 @@ function closeDreamModal() {
   modalMenu.classList.add("hidden");
   editForm.classList.add("hidden");
   modalView.classList.remove("hidden");
-  currentDreamIndex = null;
+  currentDream = null;
 }
 
-function createDreamCard(dream, index) {
+function createDreamCard(dream) {
   const card = document.createElement("button");
   card.type = "button";
   card.className = "dream-card";
@@ -144,12 +192,12 @@ function createDreamCard(dream, index) {
     </div>
   `;
 
-  card.addEventListener("click", () => openDreamModal(dream, index));
+  card.addEventListener("click", () => openDreamModal(dream));
 
   return card;
 }
 
-function getFilteredDreams(dreams) {
+function getFilteredDreams() {
   const searchText = searchInput.value.toLowerCase().trim();
   const selectedType = typeFilter.value;
   const selectedDate = dateFilter.value;
@@ -180,8 +228,7 @@ function getFilteredDreams(dreams) {
 }
 
 function renderBoard() {
-  const dreams = getDreams();
-  const filteredDreams = getFilteredDreams(dreams);
+  const filteredDreams = getFilteredDreams();
   const selectedType = typeFilter.value;
 
   board.innerHTML = "";
@@ -217,13 +264,9 @@ function renderBoard() {
       empty.textContent = "Keine Träume vorhanden";
       columnBody.appendChild(empty);
     } else {
-      columnDreams
-        .slice()
-        .reverse()
-        .forEach((dream) => {
-          const originalIndex = dreams.indexOf(dream);
-          columnBody.appendChild(createDreamCard(dream, originalIndex));
-        });
+      columnDreams.forEach((dream) => {
+        columnBody.appendChild(createDreamCard(dream));
+      });
     }
 
     board.appendChild(column);
@@ -231,62 +274,81 @@ function renderBoard() {
 }
 
 function openEditForm() {
-  const dreams = getDreams();
-  const dream = dreams[currentDreamIndex];
+  if (!currentDream) return;
 
-  if (!dream) return;
-
-  editTitle.value = dream.title || "";
-  editDate.value = dream.date || "";
-  editClarity.value = dream.clarity || "Normaler Traum";
-  editMood.value = dream.mood || "Neutral";
-  editSleep.value = dream.sleep || "Gut";
-  editDescription.value = dream.description || "";
-  editNotes.value = dream.notes || "";
+  editTitle.value = currentDream.title || "";
+  editDate.value = currentDream.date || "";
+  editClarity.value = currentDream.clarity || "Normaler Traum";
+  editMood.value = currentDream.mood || "Neutral";
+  editSleep.value = currentDream.sleep || "Gut";
+  editDescription.value = currentDream.description || "";
+  editNotes.value = currentDream.notes || "";
 
   modalMenu.classList.add("hidden");
   modalView.classList.add("hidden");
   editForm.classList.remove("hidden");
 }
 
-function saveEditedDream() {
-  const dreams = getDreams();
+async function saveEditedDream() {
+  if (!currentDream) return;
 
-  if (currentDreamIndex === null || !dreams[currentDreamIndex]) return;
-
-  dreams[currentDreamIndex] = {
-    ...dreams[currentDreamIndex],
-    title: editTitle.value.trim(),
-    date: editDate.value,
-    clarity: editClarity.value,
+  const updatedDream = {
+    title: editTitle.value.trim() || "Ohne Titel",
+    dream_date: editDate.value,
+    dream_type: editClarity.value,
     mood: editMood.value,
-    sleep: editSleep.value,
+    sleep_quality: editSleep.value,
     description: editDescription.value.trim(),
-    notes: editNotes.value.trim()
+    notes: editNotes.value.trim(),
+    is_lucid: editClarity.value === "Luzider Traum" || editClarity.value === "Luzid"
   };
 
-  saveDreams(dreams);
+  const { error } = await lucidSupabase
+    .from("dreams")
+    .update(updatedDream)
+    .eq("id", currentDream.id)
+    .eq("user_id", currentUser.id);
 
-  const updatedDream = dreams[currentDreamIndex];
+  if (error) {
+    console.error("Traum konnte nicht aktualisiert werden:", error);
+    alert("Traum konnte nicht gespeichert werden.");
+    return;
+  }
+
+  await loadDreams();
+
+  const refreshedDream = dreams.find((dream) => dream.id === currentDream.id);
 
   editForm.classList.add("hidden");
   modalView.classList.remove("hidden");
 
-  openDreamModal(updatedDream, currentDreamIndex);
+  if (refreshedDream) {
+    openDreamModal(refreshedDream);
+  }
+
   renderBoard();
 }
 
-function deleteCurrentDream() {
+async function deleteCurrentDream() {
+  if (!currentDream) return;
+
   const confirmDelete = confirm("Möchtest du diesen Traum wirklich löschen?");
 
   if (!confirmDelete) return;
 
-  const dreams = getDreams();
+  const { error } = await lucidSupabase
+    .from("dreams")
+    .delete()
+    .eq("id", currentDream.id)
+    .eq("user_id", currentUser.id);
 
-  if (currentDreamIndex === null || !dreams[currentDreamIndex]) return;
+  if (error) {
+    console.error("Traum konnte nicht gelöscht werden:", error);
+    alert("Traum konnte nicht gelöscht werden.");
+    return;
+  }
 
-  dreams.splice(currentDreamIndex, 1);
-  saveDreams(dreams);
+  await loadDreams();
 
   closeDreamModal();
   renderBoard();
@@ -294,15 +356,17 @@ function deleteCurrentDream() {
 
 /* EVENTS */
 
-filterToggle.addEventListener("click", () => {
-  archiveFilters.classList.toggle("hidden");
+if (filterToggle && archiveFilters) {
+  filterToggle.addEventListener("click", () => {
+    archiveFilters.classList.toggle("hidden");
 
-  if (archiveFilters.classList.contains("hidden")) {
-    filterToggle.textContent = "Filter anzeigen";
-  } else {
-    filterToggle.textContent = "Filter ausblenden";
-  }
-});
+    if (archiveFilters.classList.contains("hidden")) {
+      filterToggle.textContent = "Filter anzeigen";
+    } else {
+      filterToggle.textContent = "Filter ausblenden";
+    }
+  });
+}
 
 searchInput.addEventListener("input", renderBoard);
 typeFilter.addEventListener("change", renderBoard);
@@ -342,4 +406,15 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-renderBoard();
+/* START */
+
+async function initDreamArchive() {
+  currentUser = await protectPage();
+
+  if (!currentUser) return;
+
+  await loadDreams();
+  renderBoard();
+}
+
+initDreamArchive();

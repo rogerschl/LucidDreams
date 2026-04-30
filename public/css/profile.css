@@ -208,3 +208,26 @@ body::before {
     border-radius: 26px;
   }
 }
+
+
+.logout-btn{
+  width: 100%;
+  margin-top: 8px;
+  padding: 18px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #ff4d67, #d91f3a);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 4.2%;
+}
+  .logout-btn:hover {
+    transform: translateY(-2px);
+  background: linear-gradient(135deg, #ff5c74, #bf1831);
+  box-shadow: 0 16px 36px rgba(217, 31, 58, 0.32);
+  }
