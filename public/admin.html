@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | LucidDreams</title>
+
+  <link rel="stylesheet" href="./css/admin.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <main class="admin-page">
+
+    <header class="topbar">
+      <div>
+        <p class="welcome">Adminbereich</p>
+        <h1>Kursinhalte verwalten</h1>
+      </div>
+
+      <a href="./dashboard.html" class="ghost-btn">Dashboard</a>
+    </header>
+
+    <section class="admin-layout">
+
+      <!-- KURS ERSTELLEN / BEARBEITEN -->
+      <form class="admin-card" id="courseForm">
+        <span class="tag">Kurs</span>
+        <h2>Kurs erstellen</h2>
+
+        <div class="input-group">
+          <label for="courseTitle">Kurstitel</label>
+          <input 
+            type="text" 
+            id="courseTitle" 
+            placeholder="z. B. Luzides Träumen Grundlagen" 
+            required
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="courseDescription">Beschreibung</label>
+          <textarea 
+            id="courseDescription" 
+            placeholder="Kurze Beschreibung des Kurses"
+          ></textarea>
+        </div>
+
+        <div class="input-group">
+          <label for="courseOrder">Reihenfolge</label>
+          <input 
+            type="number" 
+            id="courseOrder" 
+            value="1" 
+            min="1"
+          >
+        </div>
+
+        <button type="submit" class="save-btn">
+          Kurs speichern
+        </button>
+      </form>
+
+      <!-- MODUL ERSTELLEN / BEARBEITEN -->
+      <form class="admin-card" id="moduleForm">
+        <span class="tag">Modul</span>
+        <h2>Modul erstellen</h2>
+
+        <div class="input-group">
+          <label for="moduleCourse">Kurs auswählen</label>
+          <select id="moduleCourse" required>
+            <option value="">Bitte Kurs auswählen</option>
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label for="moduleTitle">Modultitel</label>
+          <input 
+            type="text" 
+            id="moduleTitle" 
+            placeholder="z. B. Traumerinnerung" 
+            required
+          >
+        </div>
+
+        <div class="input-group">
+          <label for="moduleOrder">Reihenfolge</label>
+          <input 
+            type="number" 
+            id="moduleOrder" 
+            value="1" 
+            min="1"
+          >
+        </div>
+
+        <button type="submit" class="save-btn">
+          Modul speichern
+        </button>
+      </form>
+
+      <!-- LEKTION ERSTELLEN / BEARBEITEN -->
+      <form class="admin-card wide-card" id="lessonForm">
+        <span class="tag">Lektion</span>
+        <h2>Lektion erstellen</h2>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label for="lessonCourse">Kurs auswählen</label>
+            <select id="lessonCourse" required>
+              <option value="">Bitte Kurs auswählen</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="lessonModule">Modul auswählen</label>
+            <select id="lessonModule" required>
+              <option value="">Bitte Modul auswählen</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div class="input-group">
+            <label for="lessonTitle">Lektionstitel</label>
+            <input 
+              type="text" 
+              id="lessonTitle" 
+              placeholder="z. B. Warum Traumerinnerung die Basis ist" 
+              required
+            >
+          </div>
+
+          <div class="input-group">
+            <label for="lessonOrder">Reihenfolge</label>
+            <input 
+              type="number" 
+              id="lessonOrder" 
+              value="1" 
+              min="1"
+            >
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="lessonContent">Lektionsinhalt</label>
+          <textarea 
+            id="lessonContent" 
+            class="lesson-content-input" 
+            placeholder="Hier kannst du HTML nutzen, z. B. <p>Text</p>, <ul><li>Punkt</li></ul>" 
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="save-btn">
+          Lektion speichern
+        </button>
+      </form>
+
+    </section>
+
+    <!-- ÜBERSICHT -->
+    <section class="overview-card">
+      <div class="overview-header">
+        <span class="tag">Übersicht</span>
+        <h2>Aktuelle Kursstruktur</h2>
+      </div>
+
+      <div class="course-overview" id="courseOverview">
+        <p class="empty-state">Noch keine Kurse vorhanden.</p>
+      </div>
+    </section>
+
+    <p class="save-message" id="saveMessage"></p>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./js/supabase-client.js"></script>
+  <script src="./js/admin.js"></script>
+</body>
+</html>

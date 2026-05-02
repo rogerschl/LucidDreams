@@ -137,7 +137,8 @@ body::before {
   transform: translateY(-2px);
 }
 
-/* Sidebar eingeklappt */
+/* SIDEBAR COLLAPSED DESKTOP */
+
 .app.sidebar-collapsed .sidebar {
   align-items: center;
   padding: 32px 14px;
@@ -177,43 +178,53 @@ body::before {
   font-size: 0;
 }
 
-.app.sidebar-collapsed .sidebar-nav a::first-letter {
-  font-size: 16px;
+.app.sidebar-collapsed .sidebar-nav a::after {
+  color: #8bc7ff;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .app.sidebar-collapsed .sidebar-nav a:nth-child(1)::after {
-  content: "D";
-  font-size: 16px;
+  content: "⌂";
+  font-size: 22px;
 }
 
 .app.sidebar-collapsed .sidebar-nav a:nth-child(2)::after {
   content: "+";
-  font-size: 22px;
+  font-size: 26px;
 }
 
 .app.sidebar-collapsed .sidebar-nav a:nth-child(3)::after {
-  content: "T";
-  font-size: 16px;
+  content: "☾";
+  font-size: 24px;
 }
 
 .app.sidebar-collapsed .sidebar-nav a:nth-child(4)::after {
-  content: "K";
-  font-size: 16px;
+  content: "✦";
+  font-size: 22px;
 }
 
 .app.sidebar-collapsed .sidebar-nav a:nth-child(5)::after {
-  content: "R";
-  font-size: 16px;
+  content: "◎";
+  font-size: 24px;
 }
 
 .app.sidebar-collapsed .sidebar-footer {
   display: none;
 }
-/* /Sidebar eingeklappt */
+
+/* MOBILE OVERLAY */
+
+.sidebar-overlay {
+  display: none;
+}
+
 /* MAIN */
 
 .main {
   padding: 34px 44px 60px;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 /* TOPBAR */
@@ -222,10 +233,15 @@ body::before {
   display: flex;
   align-items: center;
   min-width: 0;
+  width: 100%;
   max-width: 98%;
   justify-content: space-between;
   gap: 22px;
   margin-bottom: 30px;
+}
+
+.mobile-menu-btn {
+  display: none;
 }
 
 .welcome {
@@ -290,7 +306,7 @@ body::before {
   overflow: hidden;
   width: 98%;
   display: grid;
-  grid-template-columns: minmax(0,1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   align-items: center;
   gap: 30px;
   padding: 28px;
@@ -325,6 +341,7 @@ body::before {
   font-weight: 900;
   margin-bottom: 20px;
 }
+
 #dashboardNameHighlight {
   background: linear-gradient(135deg, #8d63ff, #b06cff, #d946ef);
   -webkit-background-clip: text;
@@ -402,7 +419,7 @@ body::before {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4,minmax(0,1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   min-width: 0;
   max-width: 98%;
   gap: 18px;
@@ -410,6 +427,7 @@ body::before {
 }
 
 .stat-card {
+  min-width: 0;
   padding: 24px;
   border-radius: 26px;
   background: rgba(255,255,255,0.045);
@@ -437,9 +455,10 @@ body::before {
 }
 
 /* CONTENT */
+
 .content-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
   width: 100%;
   max-width: 98%;
@@ -459,7 +478,6 @@ body::before {
 .large-panel {
   min-height: 360px;
 }
-
 
 .panel-header {
   display: flex;
@@ -497,6 +515,57 @@ body::before {
   height: 100%;
   border-radius: 999px;
   background: linear-gradient(90deg, #255fff, #20c4ff);
+}
+
+/* NEXT LESSON CARD */
+
+.next-lesson-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px;
+  margin: 24px 0 28px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.next-lesson-card span {
+  width: 54px;
+  min-width: 54px;
+  height: 54px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, #255fff, #20c4ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  color: #ffffff;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.next-lesson-card div {
+  width: 100%;
+  min-width: 0;
+}
+
+.next-lesson-card h3 {
+  font-size: 20px;
+  
+  font-weight: 900;
+  line-height: 1.25;
+  margin-bottom: 8px;
+  overflow-wrap: break-word;
+}
+
+.next-lesson-card p {
+  color: rgba(255,255,255,0.62);
+  
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
 /* COURSE */
@@ -633,59 +702,127 @@ body::before {
   }
 }
 
-/* RESPONSIVE */
+/* MOBILE / TABLET OFFCANVAS SIDEBAR */
 
 @media (max-width: 1200px) {
   .app {
-    grid-template-columns: 1fr;
+    display: block;
   }
 
-  .sidebar {
-    position: relative;
-    height: auto;
-    padding: 24px;
-  }
-
-  .sidebar-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .sidebar-footer {
-    margin-top: 20px;
+  .app.sidebar-collapsed {
+    display: block;
   }
 
   .main {
     padding: 28px;
   }
 
-  .dashboard-hero,
-  .content-grid {
+  .mobile-menu-btn {
+    display: flex;
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.07);
+    color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .app.sidebar-collapsed .sidebar {
+    transform: translateX(0);
+    align-items: flex-start;
+    padding: 32px 22px;
+  }
+
+  .app.sidebar-collapsed .sidebar-logo {
+    font-size: 28px;
+    width: auto;
+    height: auto;
+    margin-bottom: 38px;
+    border-radius: 0;
+    background: transparent;
+    display: block;
+  }
+
+  .app.sidebar-collapsed .sidebar-logo::after {
+    content: "";
+  }
+
+  .app.sidebar-collapsed .sidebar-nav {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .app.sidebar-collapsed .sidebar-nav a {
+    width: auto;
+    height: auto;
+    padding: 15px 16px;
+    display: block;
+    font-size: 15px;
+  }
+
+  .app.sidebar-collapsed .sidebar-nav a::after {
+    content: "";
+  }
+
+  .app.sidebar-collapsed .sidebar-footer {
+    display: block;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.829);
+    backdrop-filter: blur(4px);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .app.sidebar-collapsed .sidebar-overlay {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dashboard-hero {
     grid-template-columns: 1fr;
   }
 
+  .content-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 650px) {
   .main {
     padding: 20px 16px 50px;
-  }
-
-  .sidebar {
-    padding: 22px 16px;
-  }
-
-  .sidebar-logo {
-    font-size: 24px;
-    margin-bottom: 22px;
-  }
-
-  .sidebar-nav a {
-    font-size: 13px;
-    padding: 12px 14px;
   }
 
   .topbar {
@@ -699,6 +836,7 @@ body::before {
   }
 
   .dashboard-hero {
+    width: 100%;
     padding: 24px;
     border-radius: 26px;
   }
@@ -717,10 +855,12 @@ body::before {
 
   .stats-grid {
     grid-template-columns: 1fr;
+    max-width: 100%;
   }
 
   .content-grid {
     grid-template-columns: 1fr;
+    max-width: 100%;
   }
 
   .panel {
@@ -743,4 +883,71 @@ body::before {
   .hero-orb img {
     width: 230px;
   }
+
+  .next-lesson-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+
+.favorite-reality-check {
+  padding: 20px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  margin-bottom: 24px;
+}
+
+.favorite-label {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(176,108,255,0.16);
+  border: 1px solid rgba(176,108,255,0.25);
+  color: #d8b4ff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.favorite-reality-check h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  line-height: 1.2;
+}
+
+.favorite-reality-check p {
+  color: rgba(255,255,255,0.72);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+.dream-signs-section {
+  margin-bottom: 24px;
+}
+
+.dream-signs-section h3 {
+  font-size: 18px;
+  font-weight: 900;
+  margin-bottom: 14px;
+}
+
+.dream-signs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dream-sign-chip {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #8bc7ff;
+  font-size: 14px;
+  font-weight: 800;
 }

@@ -18,7 +18,6 @@ const lucidDreams = document.getElementById("lucidDreams");
 const realityProgress = document.getElementById("realityProgress");
 const weeklyDreamProgress = document.getElementById("weeklyDreamProgress");
 const recentDreamList = document.getElementById("recentDreamList");
-const personalGoal = document.getElementById("personalGoal");
 
 const dashboardCoursePercent = document.getElementById("dashboardCoursePercent");
 const dashboardCourseProgress = document.getElementById("dashboardCourseProgress");
@@ -26,12 +25,22 @@ const dashboardNextLessonNumber = document.getElementById("dashboardNextLessonNu
 const dashboardNextLessonTitle = document.getElementById("dashboardNextLessonTitle");
 const dashboardNextLessonText = document.getElementById("dashboardNextLessonText");
 
+const favoriteRealityCheck = document.getElementById("favoriteRealityCheck");
+const dashboardDreamSigns = document.getElementById("dashboardDreamSigns");
+
 const app = document.querySelector(".app");
 const sidebarToggle = document.getElementById("sidebarToggle");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
+const mobileMenuBtn = document.getElementById("mobileMenuBtn");
 
 let currentUser = null;
 let currentProfile = null;
 let dreams = [];
+
+let courses = [];
+let modules = [];
+let lessons = [];
+let completedLessonIds = [];
 
 async function loadProfileFromSupabase() {
   const { data, error } = await lucidSupabase
@@ -58,7 +67,14 @@ async function loadProfileFromSupabase() {
 async function loadDreamsFromSupabase() {
   const { data, error } = await lucidSupabase
     .from("dreams")
-    .select("*")
+    .select(`
+      *,
+      dream_dream_signs (
+        dream_signs (
+          name
+        )
+      )
+    `)
     .eq("user_id", currentUser.id)
     .eq("archived", false)
     .order("dream_date", { ascending: false });
@@ -69,6 +85,152 @@ async function loadDreamsFromSupabase() {
   }
 
   return data || [];
+}
+
+async function loadCoursesFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("courses")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    console.error("Kurse konnten nicht geladen werden:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+async function loadModulesFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("modules")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    console.error("Module konnten nicht geladen werden:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+async function loadLessonsFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("lessons")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (error) {
+    console.error("Lektionen konnten nicht geladen werden:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+async function loadLessonProgressFromSupabase() {
+  const { data, error } = await lucidSupabase
+    .from("lesson_progress")
+    .select("lesson_id")
+    .eq("user_id", currentUser.id)
+    .eq("completed", true);
+
+  if (error) {
+    console.error("Kursfortschritt konnte nicht geladen werden:", error);
+    return [];
+  }
+
+  return (data || []).map((item) => item.lesson_id);
+}
+
+async function renderFavoriteRealityCheck() {
+  if (!favoriteRealityCheck || !currentUser) return;
+
+  const { data, error } = await lucidSupabase
+    .from("custom_reality_checks")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .eq("is_favorite", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Favorit-Reality-Check konnte nicht geladen werden:", error);
+    favoriteRealityCheck.innerHTML = `
+      <p class="empty-state">Favorit konnte nicht geladen werden.</p>
+    `;
+    return;
+  }
+
+  if (!data) {
+    favoriteRealityCheck.innerHTML = `
+      <p class="empty-state">Noch kein Favorit-Reality-Check ausgewählt.</p>
+    `;
+    return;
+  }
+
+  favoriteRealityCheck.innerHTML = `
+    <span class="favorite-label">Favorit</span>
+    <h3>${data.title}</h3>
+    <p>${data.text}</p>
+  `;
+}
+
+function renderDreamSigns() {
+  if (!dashboardDreamSigns) return;
+
+  const tagCounts = {};
+
+  dreams.forEach((dream) => {
+    const signs = dream.dream_dream_signs || [];
+
+    signs.forEach((entry) => {
+      const tag = entry.dream_signs?.name;
+
+      if (!tag) return;
+
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+  });
+
+  const sortedTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  if (sortedTags.length === 0) {
+    dashboardDreamSigns.innerHTML = `
+      <p class="empty-state">Noch keine Traumzeichen vorhanden.</p>
+    `;
+    return;
+  }
+
+  dashboardDreamSigns.innerHTML = "";
+
+  sortedTags.forEach(([tag, count]) => {
+    const chip = document.createElement("span");
+    chip.classList.add("dream-sign-chip");
+    chip.textContent = `${tag} x${count}`;
+    dashboardDreamSigns.appendChild(chip);
+  });
+}
+
+function getMainCourse() {
+  return courses[0] || null;
+}
+
+function getLessonsForCourse(courseId) {
+  const courseModules = modules.filter((module) => {
+    return module.course_id === courseId;
+  });
+
+  const moduleIds = courseModules.map((module) => module.id);
+
+  return lessons.filter((lesson) => {
+    return moduleIds.includes(lesson.module_id);
+  });
 }
 
 function getTodayRange() {
@@ -105,6 +267,7 @@ async function getTodayRealityChecks() {
 function getStartOfWeek(date) {
   const currentDate = new Date(date);
   const day = currentDate.getDay();
+
   const diffToMonday = day === 0 ? -6 : 1 - day;
 
   currentDate.setDate(currentDate.getDate() + diffToMonday);
@@ -156,12 +319,6 @@ function updateProfile() {
 
   if (profileInitial) {
     profileInitial.textContent = name.charAt(0).toUpperCase();
-  }
-
-  if (personalGoal) {
-    personalGoal.textContent =
-      currentProfile.personal_goal ||
-      "Ich möchte bewusster träumen und meine Traumzeichen erkennen.";
   }
 }
 
@@ -225,31 +382,77 @@ function renderRecentDreams() {
 }
 
 function updateCourseDashboard() {
-  if (dashboardCoursePercent) {
+  const course = getMainCourse();
+
+  if (!course) {
     dashboardCoursePercent.textContent = "0%";
-  }
-
-  if (dashboardCourseProgress) {
     dashboardCourseProgress.style.width = "0%";
-  }
-
-  if (dashboardNextLessonNumber) {
     dashboardNextLessonNumber.textContent = "—";
-  }
-
-  if (dashboardNextLessonTitle) {
-    dashboardNextLessonTitle.textContent = "Noch keine Lektion geladen";
-  }
-
-  if (dashboardNextLessonText) {
+    dashboardNextLessonTitle.textContent = "Noch kein Kurs vorhanden";
     dashboardNextLessonText.textContent =
-      "Die Kursinhalte werden später über den Adminbereich erstellt.";
+      "Erstelle im Adminbereich zuerst einen Kurs.";
+    return;
+  }
+
+  const courseLessons = getLessonsForCourse(course.id);
+
+  if (courseLessons.length === 0) {
+    dashboardCoursePercent.textContent = "0%";
+    dashboardCourseProgress.style.width = "0%";
+    dashboardNextLessonNumber.textContent = "—";
+    dashboardNextLessonTitle.textContent = "Noch keine Lektion vorhanden";
+    dashboardNextLessonText.textContent =
+      "Füge im Adminbereich Lektionen zu deinem Kurs hinzu.";
+    return;
+  }
+
+  const completedCount = courseLessons.filter((lesson) => {
+    return completedLessonIds.includes(lesson.id);
+  }).length;
+
+  const totalCount = courseLessons.length;
+  const percentage = Math.round((completedCount / totalCount) * 100);
+
+  const nextLesson =
+    courseLessons.find((lesson) => !completedLessonIds.includes(lesson.id)) ||
+    courseLessons[courseLessons.length - 1];
+
+  const nextLessonIndex = courseLessons.findIndex((lesson) => {
+    return lesson.id === nextLesson.id;
+  });
+
+  dashboardCoursePercent.textContent = `${percentage}%`;
+  dashboardCourseProgress.style.width = `${percentage}%`;
+
+  if (completedCount === totalCount) {
+    dashboardNextLessonNumber.textContent = "✓";
+    dashboardNextLessonTitle.textContent = "Kurs abgeschlossen";
+    dashboardNextLessonText.textContent =
+      "Du hast alle aktuellen Lektionen abgeschlossen.";
+  } else {
+    dashboardNextLessonNumber.textContent = String(nextLessonIndex + 1).padStart(2, "0");
+    dashboardNextLessonTitle.textContent = nextLesson.title;
+    dashboardNextLessonText.textContent = `Weiter mit: ${course.title}`;
   }
 }
+
+/* SIDEBAR EVENTS */
 
 if (sidebarToggle && app) {
   sidebarToggle.addEventListener("click", () => {
     app.classList.toggle("sidebar-collapsed");
+  });
+}
+
+if (mobileMenuBtn && app) {
+  mobileMenuBtn.addEventListener("click", () => {
+    app.classList.add("sidebar-collapsed");
+  });
+}
+
+if (sidebarOverlay && app) {
+  sidebarOverlay.addEventListener("click", () => {
+    app.classList.remove("sidebar-collapsed");
   });
 }
 
@@ -261,11 +464,18 @@ async function initDashboard() {
   currentProfile = await loadProfileFromSupabase();
   dreams = await loadDreamsFromSupabase();
 
+  courses = await loadCoursesFromSupabase();
+  modules = await loadModulesFromSupabase();
+  lessons = await loadLessonsFromSupabase();
+  completedLessonIds = await loadLessonProgressFromSupabase();
+
   updateProfile();
   updateDreamStats();
   await updateRealityStats();
   renderRecentDreams();
   updateCourseDashboard();
+  await renderFavoriteRealityCheck();
+  renderDreamSigns();
 }
 
 initDashboard();

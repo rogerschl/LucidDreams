@@ -1,4 +1,6 @@
-const lessonLinks = document.querySelectorAll(".lesson-link");
+const courseSelect = document.getElementById("courseSelect");
+const lessonNav = document.getElementById("lessonNav");
+
 const lessonTag = document.getElementById("lessonTag");
 const lessonTitle = document.getElementById("lessonTitle");
 const lessonContent = document.getElementById("lessonContent");
@@ -11,299 +13,229 @@ const prevLessonBtn = document.getElementById("prevLessonBtn");
 const completeLessonBtn = document.getElementById("completeLessonBtn");
 const nextLessonBtn = document.getElementById("nextLessonBtn");
 
+let currentUser = null;
+
+let courses = [];
+let modules = [];
+let lessons = [];
+let completedLessonIds = [];
+
+let selectedCourseId = null;
 let currentLessonIndex = 0;
 
-const lessons = [
-  {
-    id: 0,
-    title: "Was dich erwartet",
-    tag: "Lektion 0",
-    content: `
-      <ul>
-        <li>
-          Fliegen, Lernen oder deinen Crush küssen – all das ist mit luzidem Träumen möglich.
-        </li>
-        <li>
-          Durch uns wirst du lernen, dich kristallklar an deine Träume zu erinnern,
-          Techniken zu nutzen, um zu erkennen, dass du träumst, verschiedene Methoden
-          im Traum zur Stabilisation anzuwenden und noch vieles mehr. So können dir
-          keine Grenzen mehr gesetzt werden.
-        </li>
-        <li>
-          Aber es braucht auch Zeit. Deswegen freuen wir uns sehr, dass du so motiviert
-          dabei bist, denn es lohnt sich wirklich für jeden, diesen Skill zu lernen.
-        </li>
-      </ul>
+async function protectPage() {
+  const { data, error } = await lucidSupabase.auth.getSession();
 
-      <div class="lesson-box">
-        <h3>Wichtig</h3>
-        <p>
-          Luzides Träumen ist ein Skill. Je regelmäßiger du übst, desto besser wirst du.
-        </p>
-      </div>
-    `
-  },
-  {
-    id: 1,
-    title: "Warum Traumerinnerung die Basis ist",
-    tag: "Lektion 1",
-    content: `
-      <p>
-        Wenn du dich nicht an deine Träume erinnerst, merkst du auch nicht,
-        ob du luzid warst. Deshalb kommt Traumerinnerung vor allen Techniken.
-        Der schönste Klartraum bringt dir nichts, wenn du dich am Ende nicht einmal
-        mehr daran erinnerst.
-      </p>
-
-      <p>
-        Grundlegend kann man sagen, dass es auch bei der Traumerinnerung darum geht,
-        es für dein Gehirn wichtig zu machen. Je wichtiger und präsenter Träume in deinem
-        Leben sind, desto leichter fällt es dir dich daran zu erinnern.  
-      </p>
-
-      <div class="lesson-box">
-        <h3>Abendliche Intention</h3>
-        <p>
-          Mache Träume in deinem Leben wichtig. Je wichtiger du sie machst, desto klarer wirst du dich erinnern.
-        </p>
-      </div>
-
-    `
-  },
-  {
-    id: 2,
-    title: "Traumerinnerung verbessern",
-    tag: "Lektion 1",
-    content: `
-      <p>
-        Wie wir in der vorherigen Lektion bereits besprochen haben, geht es in diesem
-        Segement um die Wichtigkeit.
-      </p>
-
-      <div class="lesson-box">      
-      <h3>
-        Es gibt viele Möglichkeiten, Träume wichtiger zu machen, zum Beispiel:
-      </h3>
-      
-
-      <ol>
-        <li>Traumtagebuch führen, was das genau ist erfährst du später in diesem Kurs.</li>
-        <li>Mit Freunden und Familie über seine Träume sprechen, oder sie nach ihren eigenen fragen.</li>
-        <li></li>
-        <li></li>
-      </ol>
-      </div>
-
-    
-
-    `
-  },
-  {
-    id: 3,
-    title: "Morgenroutine",
-    tag: "Lektion 1",
-    content: `
-      <p>
-        Direkt nach dem Aufwachen fällt es deinem Gehirn am leichtesten, sich an den Traum zu erinnern.
-        Sobald sich das Gehirn mit etwas anderem beschäftigt, rutscht der Traum vom Kurzzeitig gedächtnis ins Unterbewusstsein
-        oder wird sogar komplett vergessen. Deswegen ist es wichtig so schnell wie möglich nach dem Aufwachen deine Träume zu dokumentieren oder
-        probieren sich daran zu erinnern, um die Träume somit ins Langzeitsgedächtnis zu übertragen.
-      </p>
-
-      <p>
-        Je öfter du deine Träume dokumentierst, desto leichter erkennst du wiederkehrende Orte,
-        Personen, Gefühle und Situationen. Genau diese Muster helfen dir später dabei,
-        im Traum bewusst zu werden.
-      </p>
-
-      <p>
-        Ein guter Eintrag muss nicht perfekt sein. Wichtig ist, dass du ihn direkt nach dem
-        Aufwachen machst und ehrlich aufschreibst, woran du dich erinnerst.
-      </p>
-
-      <ol>
-        <li>Gib deinem Traum einen kurzen Titel.</li>
-        <li>Schreibe auf, was passiert ist.</li>
-        <li>Notiere Personen, Orte und Gefühle.</li>
-        <li>Markiere mögliche Traumzeichen.</li>
-        <li>Schreibe dazu, ob etwas unlogisch war.</li>
-      </ol>
-
-      <div class="lesson-box">
-        <h3>Merksatz</h3>
-        <p>
-          Dein Traumtagebuch ist nicht nur Erinnerung, sondern Training für dein Bewusstsein.
-        </p>
-      </div>
-    `
-  },
-  {
-    id: 4,
-    title: "Abendroutine",
-    tag: "Lektion 1",
-    content: `
-      <p>
-        Vor dem schlafen gehen ist es besonders wichtig, sich mit dem Thema Träume zu beschäftigen. Denn
-        dein Gehirn nimmt das, womit du dich vor dem Schlafen beschäftigst, mit in dem Traum. Deshalb Träumen wird auch 
-        so oft vor einer wichtigen Prüfung davon.
-      </p>
-
-      <p>
-        Deshalb reicht es hier schon neben den Tipps zur Schlafqualität, sich vor dem Schlafen zu suggerieren "Ich erinnere mich an meien Träume",
-        somit wird vor dem schlafen gehen die richtige Intention gesetzt, um sich am nächsten Morgen besser an die Träume zu erinnern.
-      </p>
-
-      <p>
-        Typische Traumzeichen können sein:
-      </p>
-
-      <ul>
-        <li>Schule, obwohl du dort gar nicht mehr bist</li>
-        <li>alte Freunde oder bekannte Personen</li>
-        <li>Fliegen oder Fallen</li>
-        <li>Verfolgung</li>
-        <li>Prüfungen oder Stresssituationen</li>
-        <li>Technik funktioniert nicht richtig</li>
-        <li>Orte verändern sich plötzlich</li>
-      </ul>
-
-      <p>
-        Deshalb ist es so wichtig, beim Eintragen deiner Träume Tags oder Traumzeichen auszuwählen.
-        Mit der Zeit erkennst du deine persönlichen Muster.
-      </p>
-
-      <div class="lesson-box">
-        <h3>Übung</h3>
-        <p>
-          Schau dir deine letzten Träume an und frage dich:
-          Welche Personen, Orte oder Situationen kamen mehrfach vor?
-        </p>
-      </div>
-    `
-  },
-  {
-    id: 5,
-    title: "Traumtagebuch erklärung",
-    tag: "Lektion 2",
-    content: `
-      <p>
-        Reality Checks sind kurze Überprüfungen, ob du gerade wach bist oder träumst.
-        Das Ziel ist nicht, einfach irgendeine Bewegung auszuführen, sondern deine Realität
-        wirklich bewusst zu hinterfragen.
-      </p>
-
-      <p>
-        Der wichtigste Punkt ist: Ein Reality Check darf nicht mechanisch sein.
-        Wenn du nur schnell klickst oder automatisch denkst „ja, ich bin wach“, bringt es wenig.
-        Du musst für ein paar Sekunden ehrlich zweifeln.
-      </p>
-
-      <p>
-        Gute Fragen sind:
-      </p>
-
-      <ul>
-        <li>Wie bin ich hierher gekommen?</li>
-        <li>Was habe ich vor 10 Minuten gemacht?</li>
-        <li>Ist irgendetwas an meiner Umgebung unlogisch?</li>
-        <li>Könnte das gerade ein Traum sein?</li>
-      </ul>
-
-      <p>
-        Ein besonders guter Reality Check ist der Nasen-Test:
-        Halte dir die Nase zu und versuche trotzdem zu atmen. Im Traum funktioniert das oft,
-        obwohl es in der echten Welt nicht funktionieren sollte.
-      </p>
-
-      <div class="lesson-box">
-        <h3>Merksatz</h3>
-        <p>
-          Ein Reality Check funktioniert nur, wenn du ihn bewusst machst.
-          Nicht klicken. Wirklich zweifeln.
-        </p>
-      </div>
-    `
-  },
-  {
-    id: 5,
-    title: "Traumtagebuch erklärung",
-    tag: "Lektion 2",
-    content: `
-    <p>
-      Das Traumtagebuch bietet dir ein Archiv deiner ganzer erinnerten Träume.
-      Es hilft dir Träume für dein Gehirn wichtiger zu machen und 
-      sich besser daran zu erinnern.
-    </p>
-
-    <p>
-      Durch da niederschreiben deiner Träume wird es dir außerdem leichter Fallen,
-      gewisse Muster zu erkennen, die dir später dabei helfen, im Traum luzide zu werden.
-    </p>
-     <div class="lesson-box">
-        <h3>Merksatz</h3>
-        <p>
-          Dein Traumtagebuch ist nicht nur Erinnerung, sondern Training für dein Bewusstsein.
-        </p>
-      </div>
-      `
+  if (error || !data.session) {
+    window.location.href = "./login.html";
+    return null;
   }
-];
 
-function getCompletedLessons() {
-  return JSON.parse(localStorage.getItem("completedLessons")) || [];
+  return data.session.user;
 }
 
-function saveCompletedLessons(completedLessons) {
-  localStorage.setItem("completedLessons", JSON.stringify(completedLessons));
+async function loadCourseData() {
+  const { data: courseData, error: courseError } = await lucidSupabase
+    .from("courses")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (courseError) {
+    console.error("Kurse konnten nicht geladen werden:", courseError);
+    return;
+  }
+
+  const { data: moduleData, error: moduleError } = await lucidSupabase
+    .from("modules")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (moduleError) {
+    console.error("Module konnten nicht geladen werden:", moduleError);
+    return;
+  }
+
+  const { data: lessonData, error: lessonError } = await lucidSupabase
+    .from("lessons")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (lessonError) {
+    console.error("Lektionen konnten nicht geladen werden:", lessonError);
+    return;
+  }
+
+  courses = courseData || [];
+  modules = moduleData || [];
+  lessons = lessonData || [];
+}
+
+async function loadProgress() {
+  const { data, error } = await lucidSupabase
+    .from("lesson_progress")
+    .select("lesson_id")
+    .eq("user_id", currentUser.id)
+    .eq("completed", true);
+
+  if (error) {
+    console.error("Fortschritt konnte nicht geladen werden:", error);
+    completedLessonIds = [];
+    return;
+  }
+
+  completedLessonIds = (data || []).map((item) => item.lesson_id);
+}
+
+function renderCourseSelect() {
+  courseSelect.innerHTML = "";
+
+  if (courses.length === 0) {
+    courseSelect.innerHTML = `<option value="">Keine Kurse vorhanden</option>`;
+    return;
+  }
+
+  courses.forEach((course) => {
+    const option = document.createElement("option");
+    option.value = course.id;
+    option.textContent = course.title;
+    courseSelect.appendChild(option);
+  });
+
+  selectedCourseId = courses[0].id;
+  courseSelect.value = selectedCourseId;
+}
+
+function getModulesForSelectedCourse() {
+  return modules.filter((module) => {
+    return module.course_id === selectedCourseId;
+  });
+}
+
+function getLessonsForModule(moduleId) {
+  return lessons.filter((lesson) => {
+    return lesson.module_id === moduleId;
+  });
+}
+
+function getLessonsForSelectedCourse() {
+  const courseModules = getModulesForSelectedCourse();
+  const moduleIds = courseModules.map((module) => module.id);
+
+  return lessons.filter((lesson) => {
+    return moduleIds.includes(lesson.module_id);
+  });
 }
 
 function isLessonCompleted(lessonId) {
-  return getCompletedLessons().includes(lessonId);
+  return completedLessonIds.includes(lessonId);
+}
+
+function renderLessonNav() {
+  lessonNav.innerHTML = "";
+
+  const courseModules = getModulesForSelectedCourse();
+
+  if (courseModules.length === 0) {
+    lessonNav.innerHTML = `<p class="empty-state">Dieser Kurs hat noch keine Module.</p>`;
+    return;
+  }
+
+  courseModules.forEach((module, moduleIndex) => {
+    const moduleElement = document.createElement("div");
+    moduleElement.classList.add("lesson-module");
+
+    const moduleLessons = getLessonsForModule(module.id);
+
+    let lessonsHtml = "";
+
+    if (moduleLessons.length === 0) {
+      lessonsHtml = `<p class="empty-state">Keine Lektionen vorhanden.</p>`;
+    } else {
+      lessonsHtml = moduleLessons.map((lesson, lessonIndex) => {
+        const globalIndex = getLessonsForSelectedCourse().findIndex((item) => item.id === lesson.id);
+        const isDone = isLessonCompleted(lesson.id);
+
+        return `
+          <button class="lesson-link ${isDone ? "done" : ""}" data-lesson-index="${globalIndex}">
+            <small>${moduleIndex + 1}.${lessonIndex + 1}</small>
+            ${lesson.title}
+          </button>
+        `;
+      }).join("");
+    }
+
+    moduleElement.innerHTML = `
+      <button class="module-title" type="button">
+        <span>${String(moduleIndex + 1).padStart(2, "0")}</span>
+        ${module.title}
+      </button>
+
+      <div class="module-lessons">
+        ${lessonsHtml}
+      </div>
+    `;
+
+    lessonNav.appendChild(moduleElement);
+  });
+
+  document.querySelectorAll(".lesson-link").forEach((button) => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.lessonIndex);
+      renderLesson(index);
+    });
+  });
 }
 
 function updateProgress() {
-  const completedLessons = getCompletedLessons();
+  const courseLessons = getLessonsForSelectedCourse();
 
-  const validCompletedLessons = completedLessons.filter((lessonId) => {
-    return lessons.some((lesson) => lesson.id === lessonId);
-  });
+  const doneCount = courseLessons.filter((lesson) => {
+    return completedLessonIds.includes(lesson.id);
+  }).length;
 
-  const doneCount = validCompletedLessons.length;
-  const totalCount = lessons.length;
-  const percentage = (doneCount / totalCount) * 100;
+  const totalCount = courseLessons.length;
+  const percentage = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
 
   courseProgressText.textContent = `${doneCount} / ${totalCount} erledigt`;
   courseProgressFill.style.width = `${percentage}%`;
-
-  lessonLinks.forEach((link) => {
-    const lessonId = Number(link.dataset.lesson);
-
-    if (validCompletedLessons.includes(lessonId)) {
-      link.classList.add("done");
-    } else {
-      link.classList.remove("done");
-    }
-  });
 }
 
 function renderLesson(index) {
+  const courseLessons = getLessonsForSelectedCourse();
+
+  if (courseLessons.length === 0) {
+    currentLessonIndex = 0;
+
+    lessonTag.textContent = "Keine Lektion";
+    lessonTitle.textContent = "Noch keine Lektionen vorhanden";
+    lessonContent.innerHTML = `
+      <p>Erstelle im Adminbereich zuerst Module und Lektionen für diesen Kurs.</p>
+    `;
+
+    lessonStatus.textContent = "Nicht erledigt";
+    lessonStatus.classList.remove("done");
+
+    completeLessonBtn.disabled = true;
+    prevLessonBtn.disabled = true;
+    nextLessonBtn.disabled = true;
+
+    updateProgress();
+    return;
+  }
+
   currentLessonIndex = index;
 
-  const lesson = lessons[index];
+  const lesson = courseLessons[index];
+  const isDone = isLessonCompleted(lesson.id);
 
-  lessonTag.textContent = lesson.tag;
+  lessonTag.textContent = `Lektion ${index + 1}`;
   lessonTitle.textContent = lesson.title;
   lessonContent.innerHTML = lesson.content;
 
-  lessonLinks.forEach((link) => {
-    link.classList.remove("active");
-
-    if (Number(link.dataset.lesson) === lesson.id) {
-      link.classList.add("active");
-    }
-  });
-
-  if (isLessonCompleted(lesson.id)) {
+  if (isDone) {
     lessonStatus.textContent = "Erledigt";
     lessonStatus.classList.add("done");
     completeLessonBtn.textContent = "Erledigt";
@@ -315,29 +247,64 @@ function renderLesson(index) {
     completeLessonBtn.classList.remove("done");
   }
 
+  completeLessonBtn.disabled = false;
   prevLessonBtn.disabled = index === 0;
-  nextLessonBtn.disabled = index === lessons.length - 1;
-}
+  nextLessonBtn.disabled = index === courseLessons.length - 1;
 
-lessonLinks.forEach((link) => {
-  link.addEventListener("click", () => {
-    const lessonIndex = Number(link.dataset.lesson);
-    renderLesson(lessonIndex);
+  document.querySelectorAll(".lesson-link").forEach((button) => {
+    button.classList.remove("active");
+
+    if (Number(button.dataset.lessonIndex) === index) {
+      button.classList.add("active");
+    }
   });
-});
-
-completeLessonBtn.addEventListener("click", () => {
-  const lesson = lessons[currentLessonIndex];
-  const completedLessons = getCompletedLessons();
-
-  if (!completedLessons.includes(lesson.id)) {
-    completedLessons.push(lesson.id);
-    saveCompletedLessons(completedLessons);
-  }
 
   updateProgress();
+}
+
+async function completeCurrentLesson() {
+  const courseLessons = getLessonsForSelectedCourse();
+  const lesson = courseLessons[currentLessonIndex];
+
+  if (!lesson) return;
+
+  const { error } = await lucidSupabase
+    .from("lesson_progress")
+    .upsert(
+      {
+        user_id: currentUser.id,
+        lesson_id: lesson.id,
+        completed: true,
+        completed_at: new Date().toISOString()
+      },
+      {
+        onConflict: "user_id,lesson_id"
+      }
+    );
+
+  if (error) {
+    console.error("Lektion konnte nicht abgeschlossen werden:", error);
+    alert("Fortschritt konnte nicht gespeichert werden.");
+    return;
+  }
+
+  if (!completedLessonIds.includes(lesson.id)) {
+    completedLessonIds.push(lesson.id);
+  }
+
+  renderLessonNav();
   renderLesson(currentLessonIndex);
+}
+
+courseSelect.addEventListener("change", () => {
+  selectedCourseId = courseSelect.value;
+  currentLessonIndex = 0;
+
+  renderLessonNav();
+  renderLesson(0);
 });
+
+completeLessonBtn.addEventListener("click", completeCurrentLesson);
 
 prevLessonBtn.addEventListener("click", () => {
   if (currentLessonIndex > 0) {
@@ -346,10 +313,24 @@ prevLessonBtn.addEventListener("click", () => {
 });
 
 nextLessonBtn.addEventListener("click", () => {
-  if (currentLessonIndex < lessons.length - 1) {
+  const courseLessons = getLessonsForSelectedCourse();
+
+  if (currentLessonIndex < courseLessons.length - 1) {
     renderLesson(currentLessonIndex + 1);
   }
 });
 
-updateProgress();
-renderLesson(0);
+async function initCourse() {
+  currentUser = await protectPage();
+
+  if (!currentUser) return;
+
+  await loadCourseData();
+  await loadProgress();
+
+  renderCourseSelect();
+  renderLessonNav();
+  renderLesson(0);
+}
+
+initCourse();

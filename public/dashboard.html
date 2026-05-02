@@ -16,6 +16,8 @@
 
   <div class="app">
 
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <a href="./dashboard.html" class="sidebar-logo">
@@ -23,7 +25,7 @@
       </a>
 
       <button class="sidebar-toggle" id="sidebarToggle" type="button">
-            ☰
+        ☰
       </button>
 
       <nav class="sidebar-nav">
@@ -32,7 +34,6 @@
         <a href="./dream-archive.html">Traumtagebuch</a>
         <a href="./course.html">Lerninhalte</a>
         <a href="./reality-check.html">Reality Checks</a>
-        
       </nav>
 
       <div class="sidebar-footer">
@@ -46,6 +47,10 @@
 
       <!-- TOPBAR -->
       <header class="topbar">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" type="button">
+          ☰
+        </button>
+
         <div>
           <p class="welcome">Willkommen zurück</p>
           <h1>Bereit für klare Träume?</h1>
@@ -63,8 +68,8 @@
           <span class="tag">Heute</span>
 
           <h2 id="dashboardGreeting">
-  Hallo <span id="dashboardNameHighlight">Roger</span>! Hast du dich heute schon an einen Traum erinnert?
-</h2>
+            Hallo <span id="dashboardNameHighlight">Roger</span>! Hast du dich heute schon an einen Traum erinnert?
+          </h2>
 
           <p>
             Notiere direkt nach dem Aufwachen alles, woran du dich erinnerst.
@@ -73,7 +78,7 @@
 
           <div class="hero-actions">
             <a href="./dream-journal.html" class="primary-btn">+ Traum eintragen</a>
-            <a href="./dream-archive.html" class="secondary-btn">zum Traumtagebuch</a>
+            <a href="./dream-archive.html" class="secondary-btn">Zum Traumtagebuch</a>
           </div>
         </div>
 
@@ -97,48 +102,49 @@
         </div>
 
         <div class="stat-card">
-     <p>Reality Checks</p>
-    <h3 id="realityProgress">0/8</h3>
-     <span>heutiger Fortschritt</span>
-    </div>
+          <p>Reality Checks</p>
+          <h3 id="realityProgress">0/8</h3>
+          <span>heutiger Fortschritt</span>
+        </div>
 
-    <div class="stat-card">
-        <p>Träume diese Woche</p>
-         <h3 id="weeklyDreamProgress">0/5</h3>
-         <span>Wochenziel bis Sonntag</span>
-    </div>
+        <div class="stat-card">
+          <p>Träume diese Woche</p>
+          <h3 id="weeklyDreamProgress">0/5</h3>
+          <span>Wochenziel bis Sonntag</span>
+        </div>
       </section>
+
       <!-- MAIN GRID -->
       <section class="content-grid">
 
-       <!-- COURSE -->
-<div class="panel large-panel">
-  <div class="panel-header">
-    <div>
-      <span class="tag">Kurs</span>
-      <h2>Dein Lernpfad</h2>
-    </div>
+        <!-- COURSE -->
+        <div class="panel large-panel">
+          <div class="panel-header">
+            <div>
+              <span class="tag">Kurs</span>
+              <h2>Dein Lernpfad</h2>
+            </div>
 
-    <p id="dashboardCoursePercent">0%</p>
-  </div>
+            <p id="dashboardCoursePercent">0%</p>
+          </div>
 
-  <div class="progress-bar">
-    <div class="progress-fill" id="dashboardCourseProgress"></div>
-  </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="dashboardCourseProgress"></div>
+          </div>
 
-  <div class="next-lesson-card">
-    <span id="dashboardNextLessonNumber">00</span>
+          <div class="next-lesson-card">
+            <span id="dashboardNextLessonNumber">—</span>
 
-    <div>
-      <h3 id="dashboardNextLessonTitle">Was dich erwartet</h3>
-      <p id="dashboardNextLessonText">Starte deinen Kurs.</p>
-    </div>
-  </div>
+            <div>
+              <h3 id="dashboardNextLessonTitle">Noch keine Lektion geladen</h3>
+              <p id="dashboardNextLessonText">Die Kursinhalte werden später über den Adminbereich erstellt.</p>
+            </div>
+          </div>
 
-  <a href="./course.html" class="primary-btn full-btn">
-    Nächste Lektion starten
-  </a>
-</div>
+          <a href="./course.html" class="primary-btn full-btn">
+            Nächste Lektion starten
+          </a>
+        </div>
 
         <!-- DREAM JOURNAL -->
         <div class="panel">
@@ -156,20 +162,33 @@
           <a href="./dream-archive.html" class="secondary-btn full-btn">Alle Träume ansehen</a>
         </div>
 
-        <!-- GOAL -->
+        <!-- Reality Checks -->
         <div class="panel large-panel">
-          <div class="panel-header">
-            <div>
-              <span class="tag">Persönliches Ziel</span>
-              <h2>Dein Fokus</h2>
-            </div>
-          </div>
+  <div class="panel-header">
+    <div>
+      <span class="tag">Reality Checks</span>
+      <h2>Deine Reality Checks</h2>
+    </div>
+  </div>
 
-          <p class="goal-text" id="personalGoal">
-            Ich möchte bewusster träumen und meine Traumzeichen erkennen.
-          </p>
+  <div class="favorite-reality-check" id="favoriteRealityCheck">
+    <p class="empty-state">Favorit wird geladen...</p>
+  </div>
 
-          <a href="./profile.html" class="secondary-btn full-btn">Ziele bearbeiten</a>
+  <div class="dream-signs-section">
+    <h3>Häufige Traumzeichen</h3>
+    <div class="dream-signs-list" id="dashboardDreamSigns">
+      <p class="empty-state">Noch keine Traumzeichen vorhanden.</p>
+    </div>
+  </div>
+
+  <a href="./reality-check.html" class="secondary-btn full-btn">
+    Reality Check machen
+  </a>
+</div>
+          
+
+
         </div>
 
       </section>
@@ -177,11 +196,8 @@
     </main>
   </div>
 
-  
-<!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
   <script src="./js/dashboard.js"></script>
-
 </body>
 </html>

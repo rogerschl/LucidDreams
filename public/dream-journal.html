@@ -55,8 +55,8 @@
               <label for="clarity">Traumart</label>
               <select id="clarity">
                 <option>Normaler Traum</option>
-                <option>Halb-luzid</option>
-                <option>Luzid</option>
+                <option>Luzider Traum</option>
+                <option>Kurzer Traum</option>
                 <option>Albtraum</option>
               </select>
             </div>
@@ -98,7 +98,7 @@
               <div class="selected-tags" id="selectedTags"></div>
 
               <div class="tag-options" id="tagOptions">
-                <button type="button" class="dream-tag active">Fliegen</button>
+                <button type="button" class="dream-tag">Fliegen</button>
                 <button type="button" class="dream-tag">Schule</button>
                 <button type="button" class="dream-tag">Verfolgung</button>
                 <button type="button" class="dream-tag">Alte Freunde</button>
@@ -135,7 +135,6 @@
           </button>
 
         </form>
-        
 
       </section>
 
@@ -143,7 +142,36 @@
 
   </div>
 
-<!-- Supabase Client -->
+  <!-- SUCCESS MODAL -->
+  <div class="success-modal-overlay hidden" id="successModalOverlay">
+    <div class="success-modal">
+
+      <button type="button" class="success-close" id="successCloseBtn">
+        ×
+      </button>
+
+      <span class="tag">Gespeichert</span>
+
+      <h2>Traum gespeichert</h2>
+
+      <p>
+        Dein Traum wurde erfolgreich in deinem Traumtagebuch abgelegt.
+        Je öfter du deine Träume notierst, desto stärker trainierst du deine Traumerinnerung.
+      </p>
+
+      <div class="success-actions">
+        <button type="button" class="secondary-action" id="successStayBtn">
+          Schließen
+        </button>
+
+        <a href="./dashboard.html" class="primary-action">
+          Zurück zum Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
   <script src="./js/dream-journal.js"></script>

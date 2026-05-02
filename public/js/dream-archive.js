@@ -42,8 +42,8 @@ let currentDream = null;
 
 const columns = [
   { key: "Luzider Traum", className: "column-lucid" },
-  { key: "Kurzer Traum", className: "column-short" },
   { key: "Normaler Traum", className: "column-normal" },
+  { key: "Kurzer Traum", className: "column-short" },
   { key: "Albtraum", className: "column-nightmare" }
 ];
 
@@ -104,13 +104,16 @@ async function loadDreams() {
 function getDreamCategory(dream) {
   if (!dream) return "Normaler Traum";
 
-  if (dream.clarity === "Luzider Traum" || dream.clarity === "Luzid") return "Luzider Traum";
-  if (dream.clarity === "Albtraum") return "Albtraum";
+  if (dream.clarity === "Luzider Traum") {
+    return "Luzider Traum";
+  }
 
-  const descriptionLength = (dream.description || "").trim().length;
-
-  if (descriptionLength > 0 && descriptionLength <= 120) {
+  if (dream.clarity === "Kurzer Traum") {
     return "Kurzer Traum";
+  }
+
+  if (dream.clarity === "Albtraum") {
+    return "Albtraum";
   }
 
   return "Normaler Traum";
@@ -293,15 +296,15 @@ async function saveEditedDream() {
   if (!currentDream) return;
 
   const updatedDream = {
-    title: editTitle.value.trim() || "Ohne Titel",
-    dream_date: editDate.value,
-    dream_type: editClarity.value,
-    mood: editMood.value,
-    sleep_quality: editSleep.value,
-    description: editDescription.value.trim(),
-    notes: editNotes.value.trim(),
-    is_lucid: editClarity.value === "Luzider Traum" || editClarity.value === "Luzid"
-  };
+  title: editTitle.value.trim() || "Ohne Titel",
+  dream_date: editDate.value,
+  dream_type: editClarity.value,
+  mood: editMood.value,
+  sleep_quality: editSleep.value,
+  description: editDescription.value.trim(),
+  notes: editNotes.value.trim(),
+  is_lucid: editClarity.value === "Luzider Traum"
+};
 
   const { error } = await lucidSupabase
     .from("dreams")

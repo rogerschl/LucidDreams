@@ -24,7 +24,7 @@
 
       <div class="topbar-actions">
         <a href="./dashboard.html" class="ghost-btn">Zurück</a>
-        <a href="./profile.html" class="ghost-btn">Ziele anpassen</a>
+        <a href="./profile.html" class="ghost-btn">Reality Checks anpassen</a>
       </div>
     </header>
 
@@ -40,26 +40,8 @@
           wenn du wirklich zweifelst und nicht einfach automatisch klickst.
         </p>
 
-        <div class="question-list">
-          <div class="question-item">
-            <span>01</span>
-            <p>Wie bist du hierher gekommen?</p>
-          </div>
-
-          <div class="question-item">
-            <span>02</span>
-            <p>Was hast du vor 10 Minuten gemacht?</p>
-          </div>
-
-          <div class="question-item">
-            <span>03</span>
-            <p>Ist irgendetwas an deiner Umgebung unlogisch?</p>
-          </div>
-
-          <div class="question-item">
-            <span>04</span>
-            <p>Kannst du durch die geschlossene Nase atmen?</p>
-          </div>
+        <div class="question-list" id="realityCheckList">
+          <p class="empty-state">Reality Checks werden geladen...</p>
         </div>
 
         <button type="button" class="complete-btn" id="completeCheckBtn">
@@ -98,12 +80,12 @@
 
           <div class="notification-preview">
             <strong>LucidDreams</strong>
-            <span>Bist du gerade wirklich wach?</span>
+            <span id="notificationPreviewText">Bist du gerade wirklich wach?</span>
           </div>
 
           <p class="small-note">
-            Für echte Handy-Benachrichtigungen brauchen wir später eine PWA mit Push Notifications.
-            Aktuell speichern wir erst einmal deinen Tagesfortschritt lokal im Browser.
+            Für echte Handy-Benachrichtigungen brauchen wir später eine PWA mit Push
+            Notifications. Aktuell speichern wir deinen Tagesfortschritt in Supabase.
           </p>
         </div>
 
@@ -113,9 +95,8 @@
 
   </main>
 
- 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./js/supabase-client.js"></script>
- <script src="./js/reality-checks.js"></script>
+  <script src="./js/supabase-client.js"></script>
+  <script src="./js/reality-check.js"></script>
 </body>
 </html>

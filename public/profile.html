@@ -27,6 +27,7 @@
 
     <section class="profile-layout">
 
+      <!-- ACCOUNT -->
       <form class="profile-card" id="profileForm">
         <span class="tag">Account</span>
         <h2>Profil bearbeiten</h2>
@@ -53,11 +54,9 @@
         <button type="button" class="logout-btn" id="logoutBtn">
           Abmelden
         </button>
-
-        
       </form>
-      
 
+      <!-- ZIELE -->
       <form class="profile-card" id="goalsForm">
         <span class="tag">Ziele</span>
         <h2>Tagesziele festlegen</h2>
@@ -82,16 +81,85 @@
         </button>
       </form>
 
+      <!-- REALITY CHECKS -->
+      <section class="profile-card wide-card">
+        <div class="reality-header">
+          <div>
+            <span class="tag">Reality Checks</span>
+            <h2>Meine Reality Checks</h2>
+          </div>
+
+          <button type="button" class="small-primary-btn" id="openRealityModalBtn">
+            + Reality Check erstellen
+          </button>
+        </div>
+
+        <p class="card-description">
+          Erstelle eigene Reality Checks. Du kannst einen davon als Favorit auf dem Dashboard anzeigen lassen.
+        </p>
+
+        <div class="reality-check-list" id="realityCheckList">
+          <p class="empty-state">Noch keine Reality Checks erstellt.</p>
+        </div>
+      </section>
+
     </section>
 
     <p class="save-message" id="saveMessage"></p>
 
   </main>
 
- 
+  <!-- REALITY CHECK MODAL -->
+  <div class="modal-overlay hidden" id="realityModalOverlay">
+    <div class="modal-card">
+
+      <button type="button" class="modal-close" id="closeRealityModalBtn">
+        ×
+      </button>
+
+      <span class="tag">Reality Check</span>
+      <h2 id="realityModalTitle">Reality Check erstellen</h2>
+
+      <form id="realityCheckForm">
+
+        <div class="input-group">
+          <label for="realityTitleInput">Titel</label>
+          <input type="text" id="realityTitleInput" placeholder="z. B. Nasen-Test">
+        </div>
+
+        <div class="input-group">
+          <label for="realityTextInput">Anweisung</label>
+          <textarea id="realityTextInput" placeholder="z. B. Halte dir die Nase zu und versuche zu atmen."></textarea>
+        </div>
+
+        <div class="checkbox-grid">
+          <label class="checkbox-row">
+            <input type="checkbox" id="realityActiveInput" checked>
+            <span>Aktivieren</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="realityNotificationInput" checked>
+            <span>Für Benachrichtigungen verwenden</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="realityFavoriteInput">
+            <span>Als Favorit auf dem Dashboard anzeigen</span>
+          </label>
+        </div>
+
+        <button type="submit" class="save-btn" id="realitySubmitBtn">
+          Reality Check speichern
+        </button>
+
+      </form>
+
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./js/supabase-client.js"></script>
- <script src="./js/profile.js"></script>
+  <script src="./js/supabase-client.js"></script>
+  <script src="./js/profile.js"></script>
 </body>
 </html>

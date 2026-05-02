@@ -22,7 +22,7 @@
         <h1>Lerne luzides Träumen Schritt für Schritt</h1>
       </div>
 
-      <a href="./dashboard.html" class="ghost-btn">Zurück</a>
+      <a href="./dashboard.html" class="ghost-btn">Dashboard</a>
     </header>
 
     <section class="course-layout">
@@ -30,106 +30,40 @@
       <aside class="course-sidebar">
         <div class="sidebar-header">
           <h2>Kurs</h2>
-          <p id="courseProgressText">0 / 6 erledigt</p>
+          <p id="courseProgressText">0 / 0 erledigt</p>
 
           <div class="progress-bar">
             <div class="progress-fill" id="courseProgressFill"></div>
           </div>
         </div>
 
+        <div class="course-select-box">
+          <label for="courseSelect">Kurs auswählen</label>
+          <select id="courseSelect">
+            <option value="">Kurs wird geladen...</option>
+          </select>
+        </div>
+
         <nav class="lesson-nav" id="lessonNav">
-
-          <div class="lesson-module">
-            <button class="module-title" type="button">
-              <span>00</span>
-              Start
-            </button>
-
-            <div class="module-lessons">
-              <button class="lesson-link active" data-lesson="0">
-                <small>0.1</small>
-                Was dich erwartet
-              </button>
-            </div>
-          </div>
-
-          <div class="lesson-module">
-            <button class="module-title" type="button">
-              <span>01</span>
-              Traumerinnerung
-            </button>
-
-            <div class="module-lessons">
-              <button class="lesson-link" data-lesson="1">
-                <small>1.1</small>
-                Warum Traumerinnerung die Basis ist
-              </button>
-              <buttn class="lesson-link" data-lesson="2">
-                <small>1.2</small>
-                Traumerinnerung verbessern
-              </buttn>
-              <button class="lesson-link" data-lesson="3">
-                <small>1.3</small>
-                Morgenroutine
-              </button>
-              <button class="lesson-link" data-lesson="4">
-                <small>1.4</small>
-                Abendroutine
-              </button>
-            </div>
-          </div>
-
-          <div class="lesson-module">
-            <button class="module-title" type="button">
-              <span>02</span>
-              Traumtagebuch
-            </button>
-
-            <div class="module-lessons">
-              <button class="lesson-link" data-lesson="5">
-                <small>2.1</small>
-                Traumtagebuch erklärung
-              </button>
-
-              <button class="lesson-link" data-lesson="6">
-                <small>2.2</small>
-                Traumtagebuch richtig nutzen
-              </button>
-
-              <button class="lesson-link" data-lesson="7">
-                <small>2.3</small>
-                Traumzeichen erkennen
-              </button>
-            </div>
-          </div>
-
-          <div class="lesson-module">
-            <button class="module-title" type="button">
-              <span>03</span>
-              Reality Checks
-            </button>
-
-            <div class="module-lessons">
-              <button class="lesson-link" data-lesson="8">
-                <small>3.1</small>
-                Reality Checks verstehen
-              </button>
-            </div>
-          </div>
-
+          <p class="empty-state">Noch keine Lektionen geladen.</p>
         </nav>
       </aside>
 
       <article class="lesson-card">
 
         <div class="lesson-top">
-          <span class="tag" id="lessonTag">Lektion 0</span>
+          <span class="tag" id="lessonTag">Lektion</span>
           <span class="status-pill" id="lessonStatus">Nicht erledigt</span>
         </div>
 
-        <h2 id="lessonTitle">Was dich erwartet</h2>
+        <h2 id="lessonTitle">Noch keine Lektion ausgewählt</h2>
 
-        <div class="lesson-content" id="lessonContent"></div>
+        <div class="lesson-content" id="lessonContent">
+          <p>
+            Erstelle im Adminbereich zuerst einen Kurs, Module und Lektionen.
+            Danach erscheinen sie hier automatisch.
+          </p>
+        </div>
 
         <div class="lesson-actions">
           <button type="button" class="secondary-btn" id="prevLessonBtn">
@@ -151,12 +85,8 @@
 
   </main>
 
-  
-
-  <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./js/supabase-client.js"></script>
-<script src="./js/course.js"></script>
-
+  <script src="./js/supabase-client.js"></script>
+  <script src="./js/course.js"></script>
 </body>
 </html>

@@ -12,6 +12,10 @@ const selectedTagsContainer = document.getElementById("selectedTags");
 const newTagInput = document.getElementById("newTagInput");
 const addTagBtn = document.getElementById("addTagBtn");
 
+const successModalOverlay = document.getElementById("successModalOverlay");
+const successCloseBtn = document.getElementById("successCloseBtn");
+const successStayBtn = document.getElementById("successStayBtn");
+
 let selectedTags = [];
 let currentUser = null;
 
@@ -36,13 +40,39 @@ async function protectPage() {
   return data.session.user;
 }
 
-/* ALLE AKTUELLEN TAG-BUTTONS HOLEN */
+/* SUCCESS MODAL */
+
+function openSuccessModal() {
+  if (!successModalOverlay) return;
+  successModalOverlay.classList.remove("hidden");
+}
+
+function closeSuccessModal() {
+  if (!successModalOverlay) return;
+  successModalOverlay.classList.add("hidden");
+}
+
+if (successCloseBtn) {
+  successCloseBtn.addEventListener("click", closeSuccessModal);
+}
+
+if (successStayBtn) {
+  successStayBtn.addEventListener("click", closeSuccessModal);
+}
+
+if (successModalOverlay) {
+  successModalOverlay.addEventListener("click", (event) => {
+    if (event.target === successModalOverlay) {
+      closeSuccessModal();
+    }
+  });
+}
+
+/* TAGS */
 
 function getTagButtons() {
   return document.querySelectorAll(".dream-tag");
 }
-
-/* AKTIVE TAGS ANZEIGEN */
 
 function renderSelectedTags() {
   selectedTagsContainer.innerHTML = "";
@@ -62,8 +92,6 @@ function renderSelectedTags() {
   });
 }
 
-/* BUTTONS AKTIV / INAKTIV SETZEN */
-
 function updateActiveButtons() {
   getTagButtons().forEach((button) => {
     const tag = button.textContent.trim();
@@ -76,8 +104,6 @@ function updateActiveButtons() {
   });
 }
 
-/* EINEN TAG AUSWÄHLEN */
-
 function toggleTag(tag) {
   if (selectedTags.includes(tag)) {
     selectedTags = selectedTags.filter((item) => item !== tag);
@@ -89,21 +115,18 @@ function toggleTag(tag) {
   renderSelectedTags();
 }
 
-/* TAG-BUTTON ERSTELLEN */
-
 function createTagButton(tagName) {
   const existingButtons = Array.from(getTagButtons());
+
   const alreadyExists = existingButtons.some((button) => {
     return button.textContent.trim().toLowerCase() === tagName.toLowerCase();
   });
 
   if (alreadyExists) return;
 
-  const firstTagButton = document.querySelector(".dream-tag");
+  const tagContainer = document.getElementById("tagOptions");
 
-  if (!firstTagButton) return;
-
-  const tagContainer = firstTagButton.parentElement;
+  if (!tagContainer) return;
 
   const button = document.createElement("button");
   button.type = "button";
@@ -117,8 +140,6 @@ function createTagButton(tagName) {
   tagContainer.appendChild(button);
 }
 
-/* BESTEHENDE STATISCHE TAGS AKTIVIEREN */
-
 function activateExistingTagButtons() {
   getTagButtons().forEach((button) => {
     button.addEventListener("click", () => {
@@ -127,8 +148,6 @@ function activateExistingTagButtons() {
     });
   });
 }
-
-/* TRAUMZEICHEN AUS SUPABASE LADEN */
 
 async function loadDreamSigns() {
   const { data, error } = await lucidSupabase
@@ -146,8 +165,6 @@ async function loadDreamSigns() {
     createTagButton(dreamSign.name);
   });
 }
-
-/* TRAUMZEICHEN IN SUPABASE SPEICHERN */
 
 async function saveDreamSign(tagName) {
   const { data, error } = await lucidSupabase
@@ -171,8 +188,6 @@ async function saveDreamSign(tagName) {
 
   return data;
 }
-
-/* NEUES TRAUMZEICHEN MANUELL HINZUFÜGEN */
 
 addTagBtn.addEventListener("click", async () => {
   const newTag = newTagInput.value.trim();
@@ -218,7 +233,7 @@ dreamForm.addEventListener("submit", async (event) => {
   }
 
   const dreamType = clarityInput.value;
-  const isLucid = dreamType.toLowerCase().includes("luzid");
+  const isLucid = dreamType === "Luzider Traum";
 
   const { data: dream, error: dreamError } = await lucidSupabase
     .from("dreams")
@@ -270,7 +285,7 @@ dreamForm.addEventListener("submit", async (event) => {
   updateActiveButtons();
   renderSelectedTags();
 
-  alert("Traum gespeichert!");
+  openSuccessModal();
 });
 
 /* START */
