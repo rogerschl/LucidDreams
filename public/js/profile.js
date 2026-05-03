@@ -35,7 +35,7 @@ const DEFAULT_REALITY_CHECKS = [
   {
     title: "Nasen-Test",
     text: "Halte dir die Nase zu und versuche zu atmen. Wenn du trotzdem atmen kannst, träumst du vielleicht.",
-    is_active: true,
+    is_active: false,
     use_for_notifications: true,
     is_favorite: true
   },
@@ -49,24 +49,12 @@ const DEFAULT_REALITY_CHECKS = [
   {
     title: "Umgebung hinterfragen",
     text: "Frage dich bewusst: Wie bin ich hierher gekommen? Was habe ich vor 10 Minuten gemacht?",
-    is_active: true,
+    is_active: false,
     use_for_notifications: true,
     is_favorite: false
   },
-  {
-    title: "Text zweimal lesen",
-    text: "Lies einen Text, schau kurz weg und lies ihn erneut. Hat er sich verändert?",
-    is_active: true,
-    use_for_notifications: true,
-    is_favorite: false
-  },
-  {
-    title: "Traumzeichen-Check",
-    text: "Denke an deine häufigsten Traumzeichen. Kommt dir gerade etwas bekannt oder unlogisch vor?",
-    is_active: true,
-    use_for_notifications: true,
-    is_favorite: false
-  }
+
+ 
 ];
 
 async function protectPage() {

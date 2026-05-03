@@ -488,3 +488,141 @@ body::before {
     width: 100%;
   }
 }
+/* DREAM SIGN DELETE CONFIRM MODAL */
+
+.confirm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(4, 8, 16, 0.76);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.confirm-modal-overlay.hidden {
+  display: none;
+}
+
+.confirm-modal {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  padding: 34px;
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(20,24,38,0.96), rgba(10,12,20,0.98));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+}
+
+.confirm-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  font-size: 26px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.confirm-close:hover {
+  background: rgba(255,255,255,0.16);
+}
+
+.confirm-modal h2 {
+  font-size: clamp(34px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  margin-bottom: 18px;
+}
+
+.confirm-modal p {
+  color: rgba(255,255,255,0.70);
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.danger-action {
+  flex: 1;
+  min-width: 190px;
+  padding: 17px 22px;
+  border-radius: 999px;
+  border: none;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.25s ease;
+  text-align: center;
+  background: linear-gradient(135deg, #ff4d67, #d91f3a);
+  color: #ffffff;
+  box-shadow: 0 16px 40px rgba(217, 31, 58, 0.22);
+}
+
+.danger-action:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #ff5c74, #bf1831);
+  box-shadow: 0 20px 50px rgba(217, 31, 58, 0.32);
+}
+
+@media (max-width: 650px) {
+  .confirm-modal {
+    padding: 24px;
+    border-radius: 26px;
+  }
+
+  .confirm-actions {
+    flex-direction: column;
+  }
+
+  .danger-action,
+  .secondary-action {
+    width: 100%;
+  }
+}
+.tag-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.035);
+}
+
+.delete-tag-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,80,120,0.12);
+  color: #ff9bad;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-tag-btn:hover {
+  background: rgba(255,80,120,0.22);
+  transform: scale(1.05);
+}

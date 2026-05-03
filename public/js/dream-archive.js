@@ -33,12 +33,39 @@ const editMood = document.getElementById("editMood");
 const editSleep = document.getElementById("editSleep");
 const editDescription = document.getElementById("editDescription");
 const editNotes = document.getElementById("editNotes");
+
+const editSelectedTagsContainer = document.getElementById("editSelectedTags");
+const editTagOptions = document.getElementById("editTagOptions");
+const editNewTagInput = document.getElementById("editNewTagInput");
+const editAddTagBtn = document.getElementById("editAddTagBtn");
+
 const saveEditBtn = document.getElementById("saveEditBtn");
 const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+const deleteModalOverlay = document.getElementById("deleteModalOverlay");
+const deleteCloseBtn = document.getElementById("deleteCloseBtn");
+const deleteStayBtn = document.getElementById("deleteStayBtn");
+
+const dreamDeleteConfirmOverlay = document.getElementById("dreamDeleteConfirmOverlay");
+const dreamDeleteConfirmClose = document.getElementById("dreamDeleteConfirmClose");
+const dreamDeleteCancelBtn = document.getElementById("dreamDeleteCancelBtn");
+const dreamDeleteConfirmBtn = document.getElementById("dreamDeleteConfirmBtn");
+
+const dreamSignConfirmOverlay = document.getElementById("dreamSignConfirmOverlay");
+const dreamSignConfirmClose = document.getElementById("dreamSignConfirmClose");
+const dreamSignCancelBtn = document.getElementById("dreamSignCancelBtn");
+const dreamSignDeleteBtn = document.getElementById("dreamSignDeleteBtn");
+const dreamSignConfirmText = document.getElementById("dreamSignConfirmText");
+
+let pendingDreamDelete = null;
+let pendingDreamSignDelete = null;
 
 let currentUser = null;
 let dreams = [];
 let currentDream = null;
+
+let allDreamSigns = [];
+let selectedEditTags = [];
 
 const columns = [
   { key: "Luzider Traum", className: "column-lucid" },
@@ -56,6 +83,44 @@ async function protectPage() {
   }
 
   return data.session.user;
+}
+
+function openDeleteModal() {
+  if (!deleteModalOverlay) return;
+  deleteModalOverlay.classList.remove("hidden");
+}
+
+function closeDeleteModal() {
+  if (!deleteModalOverlay) return;
+  deleteModalOverlay.classList.add("hidden");
+}
+
+function openDreamDeleteConfirmModal() {
+  if (!currentDream) return;
+  pendingDreamDelete = currentDream;
+  dreamDeleteConfirmOverlay.classList.remove("hidden");
+}
+
+function closeDreamDeleteConfirmModal() {
+  dreamDeleteConfirmOverlay.classList.add("hidden");
+  pendingDreamDelete = null;
+}
+
+function openDreamSignConfirmModal(dreamSignId, dreamSignName) {
+  pendingDreamSignDelete = {
+    id: dreamSignId,
+    name: dreamSignName
+  };
+
+  dreamSignConfirmText.textContent =
+    `Möchtest du das Traumzeichen „${dreamSignName}“ wirklich löschen? Es wird auch aus allen anderen Träumen entfernt.`;
+
+  dreamSignConfirmOverlay.classList.remove("hidden");
+}
+
+function closeDreamSignConfirmModal() {
+  dreamSignConfirmOverlay.classList.add("hidden");
+  pendingDreamSignDelete = null;
 }
 
 function normalizeDream(dream) {
@@ -101,10 +166,82 @@ async function loadDreams() {
   dreams = data.map(normalizeDream);
 }
 
+async function loadAllDreamSigns() {
+  const { data, error } = await lucidSupabase
+    .from("dream_signs")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Traumzeichen konnten nicht geladen werden:", error);
+    allDreamSigns = [];
+    return;
+  }
+
+  allDreamSigns = data || [];
+}
+
+async function saveDreamSign(tagName) {
+  const { data, error } = await lucidSupabase
+    .from("dream_signs")
+    .upsert(
+      {
+        user_id: currentUser.id,
+        name: tagName
+      },
+      {
+        onConflict: "user_id,name"
+      }
+    )
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Traumzeichen konnte nicht gespeichert werden:", error);
+    return null;
+  }
+
+  return data;
+}
+
+async function deleteDreamSign(dreamSignId, dreamSignName) {
+  openDreamSignConfirmModal(dreamSignId, dreamSignName);
+}
+
+async function confirmDreamSignDelete() {
+  if (!pendingDreamSignDelete) return;
+
+  const { id, name } = pendingDreamSignDelete;
+
+  const { error } = await lucidSupabase
+    .from("dream_signs")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", currentUser.id);
+
+  if (error) {
+    console.error("Traumzeichen konnte nicht gelöscht werden:", error);
+    alert("Traumzeichen konnte nicht gelöscht werden.");
+    return;
+  }
+
+  selectedEditTags = selectedEditTags.filter((tag) => tag !== name);
+
+  await loadAllDreamSigns();
+  await loadDreams();
+
+  renderEditTagOptions();
+  renderEditSelectedTags();
+  renderBoard();
+
+  closeDreamSignConfirmModal();
+}
+
 function getDreamCategory(dream) {
   if (!dream) return "Normaler Traum";
 
-  if (dream.clarity === "Luzider Traum") {
+  if (dream.clarity === "Luzider Traum" || dream.clarity === "Luzid") {
     return "Luzider Traum";
   }
 
@@ -171,6 +308,7 @@ function closeDreamModal() {
   editForm.classList.add("hidden");
   modalView.classList.remove("hidden");
   currentDream = null;
+  selectedEditTags = [];
 }
 
 function createDreamCard(dream) {
@@ -276,6 +414,94 @@ function renderBoard() {
   });
 }
 
+/* EDIT TAGS */
+
+function renderEditSelectedTags() {
+  editSelectedTagsContainer.innerHTML = "";
+
+  selectedEditTags.forEach((tag) => {
+    const tagElement = document.createElement("span");
+    tagElement.classList.add("selected-tag");
+    tagElement.textContent = tag + " ×";
+
+    tagElement.addEventListener("click", () => {
+      selectedEditTags = selectedEditTags.filter((item) => item !== tag);
+      renderEditTagOptions();
+      renderEditSelectedTags();
+    });
+
+    editSelectedTagsContainer.appendChild(tagElement);
+  });
+}
+
+function renderEditTagOptions() {
+  editTagOptions.innerHTML = "";
+
+  allDreamSigns.forEach((dreamSign) => {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("edit-tag-wrapper");
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.classList.add("edit-dream-tag");
+    button.textContent = dreamSign.name;
+
+    if (selectedEditTags.includes(dreamSign.name)) {
+      button.classList.add("active");
+    }
+
+    button.addEventListener("click", () => {
+      if (selectedEditTags.includes(dreamSign.name)) {
+        selectedEditTags = selectedEditTags.filter((item) => item !== dreamSign.name);
+      } else {
+        selectedEditTags.push(dreamSign.name);
+      }
+
+      renderEditTagOptions();
+      renderEditSelectedTags();
+    });
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.classList.add("delete-dream-sign-btn");
+    deleteBtn.textContent = "×";
+
+    deleteBtn.addEventListener("click", async (event) => {
+      event.stopPropagation();
+      await deleteDreamSign(dreamSign.id, dreamSign.name);
+    });
+
+    wrapper.appendChild(button);
+    wrapper.appendChild(deleteBtn);
+    editTagOptions.appendChild(wrapper);
+  });
+}
+
+async function addEditTag() {
+  const newTag = editNewTagInput.value.trim();
+
+  if (!newTag) return;
+
+  const savedTag = await saveDreamSign(newTag);
+
+  if (!savedTag) return;
+
+  const existsInAll = allDreamSigns.some((sign) => sign.id === savedTag.id);
+
+  if (!existsInAll) {
+    allDreamSigns.push(savedTag);
+  }
+
+  if (!selectedEditTags.includes(savedTag.name)) {
+    selectedEditTags.push(savedTag.name);
+  }
+
+  editNewTagInput.value = "";
+
+  renderEditTagOptions();
+  renderEditSelectedTags();
+}
+
 function openEditForm() {
   if (!currentDream) return;
 
@@ -287,6 +513,11 @@ function openEditForm() {
   editDescription.value = currentDream.description || "";
   editNotes.value = currentDream.notes || "";
 
+  selectedEditTags = currentDream.tags ? [...currentDream.tags] : [];
+
+  renderEditTagOptions();
+  renderEditSelectedTags();
+
   modalMenu.classList.add("hidden");
   modalView.classList.add("hidden");
   editForm.classList.remove("hidden");
@@ -296,15 +527,15 @@ async function saveEditedDream() {
   if (!currentDream) return;
 
   const updatedDream = {
-  title: editTitle.value.trim() || "Ohne Titel",
-  dream_date: editDate.value,
-  dream_type: editClarity.value,
-  mood: editMood.value,
-  sleep_quality: editSleep.value,
-  description: editDescription.value.trim(),
-  notes: editNotes.value.trim(),
-  is_lucid: editClarity.value === "Luzider Traum"
-};
+    title: editTitle.value.trim() || "Ohne Titel",
+    dream_date: editDate.value,
+    dream_type: editClarity.value,
+    mood: editMood.value,
+    sleep_quality: editSleep.value,
+    description: editDescription.value.trim(),
+    notes: editNotes.value.trim(),
+    is_lucid: editClarity.value === "Luzider Traum"
+  };
 
   const { error } = await lucidSupabase
     .from("dreams")
@@ -318,7 +549,36 @@ async function saveEditedDream() {
     return;
   }
 
+  const { error: deleteLinksError } = await lucidSupabase
+    .from("dream_dream_signs")
+    .delete()
+    .eq("dream_id", currentDream.id)
+    .eq("user_id", currentUser.id);
+
+  if (deleteLinksError) {
+    console.error("Alte Traumzeichen konnten nicht entfernt werden:", deleteLinksError);
+  }
+
+  for (const tagName of selectedEditTags) {
+    const dreamSign = await saveDreamSign(tagName);
+
+    if (!dreamSign) continue;
+
+    const { error: linkError } = await lucidSupabase
+      .from("dream_dream_signs")
+      .insert({
+        user_id: currentUser.id,
+        dream_id: currentDream.id,
+        dream_sign_id: dreamSign.id
+      });
+
+    if (linkError) {
+      console.error("Traumzeichen-Verknüpfung fehlgeschlagen:", linkError);
+    }
+  }
+
   await loadDreams();
+  await loadAllDreamSigns();
 
   const refreshedDream = dreams.find((dream) => dream.id === currentDream.id);
 
@@ -333,16 +593,16 @@ async function saveEditedDream() {
 }
 
 async function deleteCurrentDream() {
-  if (!currentDream) return;
+  openDreamDeleteConfirmModal();
+}
 
-  const confirmDelete = confirm("Möchtest du diesen Traum wirklich löschen?");
-
-  if (!confirmDelete) return;
+async function confirmDreamDelete() {
+  if (!pendingDreamDelete) return;
 
   const { error } = await lucidSupabase
     .from("dreams")
     .delete()
-    .eq("id", currentDream.id)
+    .eq("id", pendingDreamDelete.id)
     .eq("user_id", currentUser.id);
 
   if (error) {
@@ -352,9 +612,12 @@ async function deleteCurrentDream() {
   }
 
   await loadDreams();
+  await loadAllDreamSigns();
 
+  closeDreamDeleteConfirmModal();
   closeDreamModal();
   renderBoard();
+  openDeleteModal();
 }
 
 /* EVENTS */
@@ -390,6 +653,15 @@ editDreamBtn.addEventListener("click", openEditForm);
 deleteDreamBtn.addEventListener("click", deleteCurrentDream);
 saveEditBtn.addEventListener("click", saveEditedDream);
 
+editAddTagBtn.addEventListener("click", addEditTag);
+
+editNewTagInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    addEditTag();
+  }
+});
+
 cancelEditBtn.addEventListener("click", () => {
   editForm.classList.add("hidden");
   modalView.classList.remove("hidden");
@@ -403,9 +675,68 @@ dreamModalOverlay.addEventListener("click", (event) => {
   }
 });
 
+if (deleteCloseBtn) {
+  deleteCloseBtn.addEventListener("click", closeDeleteModal);
+}
+
+if (deleteStayBtn) {
+  deleteStayBtn.addEventListener("click", closeDeleteModal);
+}
+
+if (deleteModalOverlay) {
+  deleteModalOverlay.addEventListener("click", (event) => {
+    if (event.target === deleteModalOverlay) {
+      closeDeleteModal();
+    }
+  });
+}
+
+if (dreamDeleteConfirmClose) {
+  dreamDeleteConfirmClose.addEventListener("click", closeDreamDeleteConfirmModal);
+}
+
+if (dreamDeleteCancelBtn) {
+  dreamDeleteCancelBtn.addEventListener("click", closeDreamDeleteConfirmModal);
+}
+
+if (dreamDeleteConfirmOverlay) {
+  dreamDeleteConfirmOverlay.addEventListener("click", (event) => {
+    if (event.target === dreamDeleteConfirmOverlay) {
+      closeDreamDeleteConfirmModal();
+    }
+  });
+}
+
+if (dreamDeleteConfirmBtn) {
+  dreamDeleteConfirmBtn.addEventListener("click", confirmDreamDelete);
+}
+
+if (dreamSignConfirmClose) {
+  dreamSignConfirmClose.addEventListener("click", closeDreamSignConfirmModal);
+}
+
+if (dreamSignCancelBtn) {
+  dreamSignCancelBtn.addEventListener("click", closeDreamSignConfirmModal);
+}
+
+if (dreamSignConfirmOverlay) {
+  dreamSignConfirmOverlay.addEventListener("click", (event) => {
+    if (event.target === dreamSignConfirmOverlay) {
+      closeDreamSignConfirmModal();
+    }
+  });
+}
+
+if (dreamSignDeleteBtn) {
+  dreamSignDeleteBtn.addEventListener("click", confirmDreamSignDelete);
+}
+
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeDreamModal();
+    closeDeleteModal();
+    closeDreamDeleteConfirmModal();
+    closeDreamSignConfirmModal();
   }
 });
 
@@ -417,6 +748,7 @@ async function initDreamArchive() {
   if (!currentUser) return;
 
   await loadDreams();
+  await loadAllDreamSigns();
   renderBoard();
 }
 

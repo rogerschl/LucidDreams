@@ -25,7 +25,7 @@
         </div>
 
         <div class="topbar-actions">
-          <a href="./dashboard.html" class="ghost-btn">Zurück</a>
+          <a href="./dashboard.html" class="ghost-btn">Dashboard</a>
           <a href="./dream-journal.html" class="add-dream-btn">+ Neuer Traum</a>
         </div>
       </header>
@@ -46,8 +46,8 @@
           <select id="typeFilter">
             <option value="Alle">Alle</option>
             <option value="Luzider Traum">Luzider Traum</option>
-            <option value="Kurzer Traum">Kurzer Traum</option>
             <option value="Normaler Traum">Normaler Traum</option>
+            <option value="Kurzer Traum">Kurzer Traum</option>
             <option value="Albtraum">Albtraum</option>
           </select>
         </div>
@@ -69,7 +69,7 @@
 
   </div>
 
-  <!-- MODAL -->
+  <!-- DREAM MODAL -->
   <div class="dream-modal-overlay" id="dreamModalOverlay">
     <div class="dream-modal" id="dreamModal">
 
@@ -167,6 +167,21 @@
           <textarea id="editNotes"></textarea>
         </div>
 
+        <div class="edit-group">
+          <label>Traumzeichen</label>
+
+          <div class="edit-tag-picker">
+            <div class="selected-tags" id="editSelectedTags"></div>
+
+            <div class="tag-options" id="editTagOptions"></div>
+
+            <div class="new-tag-row">
+              <input type="text" id="editNewTagInput" placeholder="Neues Traumzeichen hinzufügen">
+              <button type="button" id="editAddTagBtn">Hinzufügen</button>
+            </div>
+          </div>
+        </div>
+
         <div class="edit-actions">
           <button type="button" class="cancel-edit-btn" id="cancelEditBtn">
             Abbrechen
@@ -181,7 +196,93 @@
     </div>
   </div>
 
-  
+  <!-- DREAM DELETE CONFIRM MODAL -->
+  <div class="confirm-modal-overlay hidden" id="dreamDeleteConfirmOverlay">
+    <div class="confirm-modal">
+
+      <button type="button" class="confirm-close" id="dreamDeleteConfirmClose">
+        ×
+      </button>
+
+      <span class="tag">Achtung</span>
+
+      <h2>Traum wirklich löschen?</h2>
+
+      <p>
+        Möchtest du diesen Traum wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+      </p>
+
+      <div class="confirm-actions">
+        <button type="button" class="secondary-action" id="dreamDeleteCancelBtn">
+          Abbrechen
+        </button>
+
+        <button type="button" class="danger-action" id="dreamDeleteConfirmBtn">
+          Wirklich löschen
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DELETE SUCCESS MODAL -->
+  <div class="delete-modal-overlay hidden" id="deleteModalOverlay">
+    <div class="delete-modal">
+
+      <button type="button" class="delete-close" id="deleteCloseBtn">
+        ×
+      </button>
+
+      <span class="tag">Gelöscht</span>
+
+      <h2>Traum gelöscht</h2>
+
+      <p>
+        Dein Traum wurde erfolgreich aus deinem Traumtagebuch entfernt.
+        Die verknüpften Traumzeichen bleiben weiterhin in deiner Auswahl erhalten.
+      </p>
+
+      <div class="delete-actions">
+        <button type="button" class="secondary-action" id="deleteStayBtn">
+          Schließen
+        </button>
+
+        <a href="./dashboard.html" class="primary-action">
+          Zurück zum Dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DREAM SIGN DELETE CONFIRM MODAL -->
+  <div class="confirm-modal-overlay hidden" id="dreamSignConfirmOverlay">
+    <div class="confirm-modal">
+
+      <button type="button" class="confirm-close" id="dreamSignConfirmClose">
+        ×
+      </button>
+
+      <span class="tag">Achtung</span>
+
+      <h2>Traumzeichen löschen?</h2>
+
+      <p id="dreamSignConfirmText">
+        Möchtest du dieses Traumzeichen wirklich löschen? Es wird auch aus allen anderen Träumen entfernt.
+      </p>
+
+      <div class="confirm-actions">
+        <button type="button" class="secondary-action" id="dreamSignCancelBtn">
+          Abbrechen
+        </button>
+
+        <button type="button" class="danger-action" id="dreamSignDeleteBtn">
+          Wirklich löschen
+        </button>
+      </div>
+
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
