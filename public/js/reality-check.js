@@ -186,7 +186,7 @@ async function updateProgress() {
   }
 
   completeCheckBtn.classList.remove("done");
-  completeCheckBtn.textContent = "Reality Check abgeschlossen";
+  completeCheckBtn.textContent = "Reality Check abschließen";
   completeCheckBtn.disabled = false;
 }
 
