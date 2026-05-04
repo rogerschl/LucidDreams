@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard | LucidDreams</title>
 
-  <link rel="stylesheet" href="./css/dashboard.css">
+  <link rel="stylesheet" href="./css/dashboard.css?v=7">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,14 +105,31 @@
           <p>Reality Checks</p>
           <h3 id="realityProgress">0/8</h3>
           <span>heutiger Fortschritt</span>
+
+          <div class="mini-progress">
+            <div class="mini-progress-fill" id="realityGoalFill"></div>
+          </div>
+
+          <small class="stat-detail" id="realityGoalText">
+            Noch kein Reality Check heute.
+          </small>
         </div>
 
         <div class="stat-card">
           <p>Träume diese Woche</p>
           <h3 id="weeklyDreamProgress">0/5</h3>
           <span>Wochenziel bis Sonntag</span>
+
+          <div class="mini-progress">
+            <div class="mini-progress-fill" id="weeklyDreamFill"></div>
+          </div>
+
+          <small class="stat-detail" id="weeklyDreamText">
+            Noch kein Traum diese Woche.
+          </small>
         </div>
       </section>
+
 
       <!-- MAIN GRID -->
       <section class="content-grid">
@@ -162,33 +179,29 @@
           <a href="./dream-archive.html" class="secondary-btn full-btn">Alle Träume ansehen</a>
         </div>
 
-        <!-- Reality Checks -->
+        <!-- REALITY CHECKS -->
         <div class="panel large-panel">
-  <div class="panel-header">
-    <div>
-      <span class="tag">Reality Checks</span>
-      <h2>Deine Reality Checks</h2>
-    </div>
-  </div>
+          <div class="panel-header">
+            <div>
+              <span class="tag">Reality Checks</span>
+              <h2>Deine Reality Checks</h2>
+            </div>
+          </div>
 
-  <div class="favorite-reality-check" id="favoriteRealityCheck">
-    <p class="empty-state">Favorit wird geladen...</p>
-  </div>
+          <div class="favorite-reality-check" id="favoriteRealityCheck">
+            <p class="empty-state">Favorit wird geladen...</p>
+          </div>
 
-  <div class="dream-signs-section">
-    <h3>Häufige Traumzeichen</h3>
-    <div class="dream-signs-list" id="dashboardDreamSigns">
-      <p class="empty-state">Noch keine Traumzeichen vorhanden.</p>
-    </div>
-  </div>
+          <div class="dream-signs-section">
+            <h3>Häufige Traumzeichen</h3>
+            <div class="dream-signs-list" id="dashboardDreamSigns">
+              <p class="empty-state">Noch keine Traumzeichen vorhanden.</p>
+            </div>
+          </div>
 
-  <a href="./reality-check.html" class="secondary-btn full-btn">
-    Reality Check machen
-  </a>
-</div>
-          
-
-
+          <a href="./reality-check.html" class="secondary-btn full-btn">
+            Reality Check machen
+          </a>
         </div>
 
       </section>
@@ -198,6 +211,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
+  <script src="./js/auth-guard.js"></script>
   <script src="./js/dashboard.js"></script>
 </body>
 </html>

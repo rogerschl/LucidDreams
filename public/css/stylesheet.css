@@ -563,6 +563,8 @@ body::after {
 
 .input-group {
   margin-bottom: 18px;
+  text-align: left;
+  
 }
 
 .input-group label {
@@ -1051,11 +1053,23 @@ body::after {
   cursor: pointer;
   transition: 0.25s ease;
   position: relative;
-  box-shadow: 0px 1px 20px rgba(255, 255, 255, 0.592);
+  
 }
 .resend-btn:hover{
   top: -2px;
   background: #ffffff;
   color: rgb(9, 6, 6); 
-  box-shadow: #20c4ff;
+
 } 
+.forgot-password-wrapper{
+  margin: 0 auto;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  display: flex;
+  text-align: center;
+  
+  padding-top: 140px;
+  padding-left: 14px;
+  padding-right: 14px;
+}

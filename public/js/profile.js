@@ -2,12 +2,18 @@ const profileForm = document.getElementById("profileForm");
 const goalsForm = document.getElementById("goalsForm");
 
 const nameInput = document.getElementById("nameInput");
-const emailInput = document.getElementById("emailInput");
-const passwordInput = document.getElementById("passwordInput");
+const currentEmailText = document.getElementById("currentEmailText");
 
 const realityGoalInput = document.getElementById("realityGoalInput");
 const dreamGoalInput = document.getElementById("dreamGoalInput");
-const personalGoalInput = document.getElementById("personalGoalInput");
+
+const realityGoalValue = document.getElementById("realityGoalValue");
+const dreamGoalValue = document.getElementById("dreamGoalValue");
+
+const realityGoalText = document.getElementById("realityGoalText");
+const dreamGoalText = document.getElementById("dreamGoalText");
+
+const goalToggleButtons = document.querySelectorAll("[data-goal-toggle]");
 
 const openRealityModalBtn = document.getElementById("openRealityModalBtn");
 const closeRealityModalBtn = document.getElementById("closeRealityModalBtn");
@@ -23,6 +29,22 @@ const realityFavoriteInput = document.getElementById("realityFavoriteInput");
 const realitySubmitBtn = document.getElementById("realitySubmitBtn");
 const realityCheckList = document.getElementById("realityCheckList");
 
+const deleteRealityModalOverlay = document.getElementById("deleteRealityModalOverlay");
+const closeDeleteRealityModalBtn = document.getElementById("closeDeleteRealityModalBtn");
+const cancelDeleteRealityBtn = document.getElementById("cancelDeleteRealityBtn");
+const confirmDeleteRealityBtn = document.getElementById("confirmDeleteRealityBtn");
+
+const openPasswordModalBtn = document.getElementById("openPasswordModalBtn");
+const closePasswordModalBtn = document.getElementById("closePasswordModalBtn");
+const passwordModalOverlay = document.getElementById("passwordModalOverlay");
+const passwordChangeForm = document.getElementById("passwordChangeForm");
+const currentPasswordInput = document.getElementById("currentPasswordInput");
+const newPasswordInput = document.getElementById("newPasswordInput");
+const confirmNewPasswordInput = document.getElementById("confirmNewPasswordInput");
+const passwordModalMessage = document.getElementById("passwordModalMessage");
+
+const goalSaveMessage = document.getElementById("goalSaveMessage");
+const profileSaveMessage = document.getElementById("profileSaveMessage");
 const saveMessage = document.getElementById("saveMessage");
 const logoutBtn = document.getElementById("logoutBtn");
 
@@ -30,6 +52,7 @@ let currentUser = null;
 let currentProfile = null;
 let customRealityChecks = [];
 let editingRealityCheckId = null;
+let deletingRealityCheckId = null;
 
 const DEFAULT_REALITY_CHECKS = [
   {
@@ -52,9 +75,7 @@ const DEFAULT_REALITY_CHECKS = [
     is_active: false,
     use_for_notifications: true,
     is_favorite: false
-  },
-
- 
+  }
 ];
 
 async function protectPage() {
@@ -72,10 +93,131 @@ function showMessage(text) {
   if (!saveMessage) return;
 
   saveMessage.textContent = text;
+  saveMessage.classList.add("show");
 
   setTimeout(() => {
     saveMessage.textContent = "";
+    saveMessage.classList.remove("show");
   }, 2500);
+}
+
+function showInlineMessage(element, text, isError = false) {
+  if (!element) return;
+
+  element.textContent = text;
+  element.classList.add("show");
+
+  if (isError) {
+    element.classList.add("error");
+  } else {
+    element.classList.remove("error");
+  }
+
+  setTimeout(() => {
+    element.classList.remove("show");
+    element.classList.remove("error");
+    element.textContent = "";
+  }, 3000);
+}
+
+function showModalMessage(element, text, isError = false) {
+  if (!element) return;
+
+  element.textContent = text;
+  element.classList.add("show");
+
+  if (isError) {
+    element.classList.add("error");
+  } else {
+    element.classList.remove("error");
+  }
+}
+
+function clearModalMessage(element) {
+  if (!element) return;
+
+  element.textContent = "";
+  element.classList.remove("show");
+  element.classList.remove("error");
+}
+
+function escapeHTML(value) {
+  return String(value || "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function updateSliderFill(input) {
+  if (!input) return;
+
+  const min = Number(input.min);
+  const max = Number(input.max);
+  const value = Number(input.value);
+
+  const percentage = ((value - min) / (max - min)) * 100;
+
+  input.style.setProperty("--slider-progress", `${percentage}%`);
+}
+
+function updateGoalSliderUI() {
+  const realityValue = Number(realityGoalInput.value) || 8;
+  const dreamValue = Math.min(Number(dreamGoalInput.value) || 5, 7);
+
+  dreamGoalInput.value = dreamValue;
+
+  realityGoalValue.textContent = realityValue;
+  dreamGoalValue.textContent = dreamValue;
+
+  realityGoalText.textContent =
+    realityValue === 1
+      ? "1 Reality Check pro Tag"
+      : `${realityValue} Reality Checks pro Tag`;
+
+  dreamGoalText.textContent =
+    dreamValue === 1
+      ? "1 Traumeintrag pro Woche"
+      : `${dreamValue} Traumeinträge pro Woche`;
+
+  updateSliderFill(realityGoalInput);
+  updateSliderFill(dreamGoalInput);
+}
+
+function initGoalSliders() {
+  realityGoalInput.addEventListener("input", updateGoalSliderUI);
+  dreamGoalInput.addEventListener("input", updateGoalSliderUI);
+
+  goalToggleButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const cardId = button.dataset.goalToggle;
+      const card = document.getElementById(cardId);
+
+      if (!card) return;
+
+      card.classList.toggle("open");
+    });
+  });
+
+  updateGoalSliderUI();
+}
+
+async function syncProfileEmailWithAuth(authEmail) {
+  if (!authEmail || !currentProfile) return;
+
+  if (currentProfile.email === authEmail) return;
+
+  const { error } = await lucidSupabase
+    .from("profiles")
+    .update({
+      email: authEmail
+    })
+    .eq("id", currentUser.id);
+
+  if (!error) {
+    currentProfile.email = authEmail;
+  }
 }
 
 async function loadProfile() {
@@ -97,13 +239,15 @@ async function loadProfile() {
 
   currentProfile = data;
 
-  nameInput.value = data.display_name || "";
-  emailInput.value = data.email || currentUser.email || "";
-  passwordInput.value = "";
+  await syncProfileEmailWithAuth(currentUser.email);
 
-  realityGoalInput.value = data.reality_goal || 8;
-  dreamGoalInput.value = data.dream_goal || 5;
-  personalGoalInput.value = data.personal_goal || "";
+  nameInput.value = currentProfile.display_name || "";
+  currentEmailText.textContent = currentUser.email || currentProfile.email || "Keine E-Mail gefunden";
+
+  realityGoalInput.value = Number(currentProfile.reality_goal) || 8;
+  dreamGoalInput.value = Math.min(Number(currentProfile.dream_goal) || 5, 7);
+
+  updateGoalSliderUI();
 }
 
 async function loadCustomRealityChecks() {
@@ -124,9 +268,9 @@ async function loadCustomRealityChecks() {
 }
 
 async function createDefaultRealityChecksIfNeeded() {
-  const existingTitles = customRealityChecks.map((check) =>
-    check.title.toLowerCase().trim()
-  );
+  const existingTitles = customRealityChecks.map((check) => {
+    return check.title.toLowerCase().trim();
+  });
 
   const missingDefaultChecks = DEFAULT_REALITY_CHECKS.filter((check) => {
     return !existingTitles.includes(check.title.toLowerCase().trim());
@@ -176,11 +320,15 @@ function renderCustomRealityChecks() {
     const item = document.createElement("article");
     item.classList.add("reality-item");
 
+    if (check.is_favorite) {
+      item.classList.add("favorite-reality-item");
+    }
+
     item.innerHTML = `
       <div class="reality-item-top">
         <div class="reality-main">
-          <h3>${check.title}</h3>
-          <p>${check.text}</p>
+          <h3>${escapeHTML(check.title)}</h3>
+          <p>${escapeHTML(check.text)}</p>
 
           <div class="reality-badges">
             <span class="reality-badge ${check.is_active ? "active" : ""}">
@@ -191,7 +339,7 @@ function renderCustomRealityChecks() {
               ${check.use_for_notifications ? "Benachrichtigungen" : "Keine Benachrichtigung"}
             </span>
 
-            <span class="reality-badge ${check.is_favorite ? "active" : ""}">
+            <span class="reality-badge ${check.is_favorite ? "favorite" : ""}">
               ${check.is_favorite ? "Favorit" : "Kein Favorit"}
             </span>
           </div>
@@ -254,7 +402,9 @@ function openCreateRealityModal() {
 }
 
 function openEditRealityModal(checkId) {
-  const check = customRealityChecks.find((item) => item.id === checkId);
+  const check = customRealityChecks.find((item) => {
+    return item.id === checkId;
+  });
 
   if (!check) return;
 
@@ -279,15 +429,24 @@ function closeRealityModal() {
   realityCheckForm.reset();
 }
 
-async function deleteRealityCheck(checkId) {
-  const confirmDelete = confirm("Möchtest du diesen Reality Check wirklich löschen?");
+function deleteRealityCheck(checkId) {
+  deletingRealityCheckId = checkId;
+  closeAllRealityMenus();
+  deleteRealityModalOverlay.classList.remove("hidden");
+}
 
-  if (!confirmDelete) return;
+function closeDeleteRealityModal() {
+  deletingRealityCheckId = null;
+  deleteRealityModalOverlay.classList.add("hidden");
+}
+
+async function confirmDeleteRealityCheck() {
+  if (!deletingRealityCheckId || !currentUser) return;
 
   const { error } = await lucidSupabase
     .from("custom_reality_checks")
     .delete()
-    .eq("id", checkId)
+    .eq("id", deletingRealityCheckId)
     .eq("user_id", currentUser.id);
 
   if (error) {
@@ -297,7 +456,33 @@ async function deleteRealityCheck(checkId) {
   }
 
   showMessage("Reality Check gelöscht.");
+  closeDeleteRealityModal();
   await loadCustomRealityChecks();
+}
+
+function openPasswordModal() {
+  passwordChangeForm.reset();
+  clearModalMessage(passwordModalMessage);
+  passwordModalOverlay.classList.remove("hidden");
+}
+
+function closePasswordModal() {
+  passwordModalOverlay.classList.add("hidden");
+  passwordChangeForm.reset();
+  clearModalMessage(passwordModalMessage);
+}
+
+async function verifyCurrentPassword(password) {
+  if (!currentUser || !currentUser.email) {
+    return false;
+  }
+
+  const { error } = await lucidSupabase.auth.signInWithPassword({
+    email: currentUser.email,
+    password: password
+  });
+
+  return !error;
 }
 
 profileForm.addEventListener("submit", async (event) => {
@@ -306,55 +491,27 @@ profileForm.addEventListener("submit", async (event) => {
   if (!currentUser) return;
 
   const displayName = nameInput.value.trim() || "User";
-  const email = emailInput.value.trim();
-  const newPassword = passwordInput.value.trim();
 
-  const { error: profileError } = await lucidSupabase
+  const { error } = await lucidSupabase
     .from("profiles")
     .update({
       display_name: displayName,
-      email: email
+      email: currentUser.email
     })
     .eq("id", currentUser.id);
 
-  if (profileError) {
-    console.error("Profil konnte nicht gespeichert werden:", profileError);
-    showMessage("Profil konnte nicht gespeichert werden.");
+  if (error) {
+    console.error("Profil konnte nicht gespeichert werden:", error);
+    showInlineMessage(profileSaveMessage, "Profil konnte nicht gespeichert werden.", true);
     return;
   }
 
-  if (email && email !== currentUser.email) {
-    const { error: emailError } = await lucidSupabase.auth.updateUser({
-      email: email
-    });
-
-    if (emailError) {
-      console.error("E-Mail konnte nicht geändert werden:", emailError);
-      showMessage("Profil gespeichert, aber E-Mail konnte nicht geändert werden.");
-      return;
-    }
+  if (currentProfile) {
+    currentProfile.display_name = displayName;
+    currentProfile.email = currentUser.email;
   }
 
-  if (newPassword.length > 0) {
-    if (newPassword.length < 6) {
-      showMessage("Passwort muss mindestens 6 Zeichen lang sein.");
-      return;
-    }
-
-    const { error: passwordError } = await lucidSupabase.auth.updateUser({
-      password: newPassword
-    });
-
-    if (passwordError) {
-      console.error("Passwort konnte nicht geändert werden:", passwordError);
-      showMessage("Passwort konnte nicht geändert werden.");
-      return;
-    }
-
-    passwordInput.value = "";
-  }
-
-  showMessage("Profil gespeichert.");
+  showInlineMessage(profileSaveMessage, "Profil gespeichert.");
 });
 
 goalsForm.addEventListener("submit", async (event) => {
@@ -363,25 +520,83 @@ goalsForm.addEventListener("submit", async (event) => {
   if (!currentUser) return;
 
   const realityGoal = Number(realityGoalInput.value) || 8;
-  const dreamGoal = Number(dreamGoalInput.value) || 5;
-  const personalGoal = personalGoalInput.value.trim();
+  const dreamGoal = Math.min(Number(dreamGoalInput.value) || 5, 7);
 
   const { error } = await lucidSupabase
     .from("profiles")
     .update({
       reality_goal: realityGoal,
-      dream_goal: dreamGoal,
-      personal_goal: personalGoal
+      dream_goal: dreamGoal
     })
     .eq("id", currentUser.id);
 
   if (error) {
     console.error("Ziele konnten nicht gespeichert werden:", error);
-    showMessage("Ziele konnten nicht gespeichert werden.");
+    showInlineMessage(goalSaveMessage, "Ziele konnten nicht gespeichert werden.", true);
     return;
   }
 
-  showMessage("Ziele gespeichert.");
+  dreamGoalInput.value = dreamGoal;
+  updateGoalSliderUI();
+
+  showInlineMessage(goalSaveMessage, "Ziele gespeichert.");
+});
+
+passwordChangeForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!currentUser) return;
+
+  const currentPassword = currentPasswordInput.value.trim();
+  const newPassword = newPasswordInput.value.trim();
+  const confirmNewPassword = confirmNewPasswordInput.value.trim();
+
+  if (!currentPassword || !newPassword || !confirmNewPassword) {
+    showModalMessage(passwordModalMessage, "Bitte alle Felder ausfüllen.", true);
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    showModalMessage(passwordModalMessage, "Das neue Passwort muss mindestens 6 Zeichen lang sein.", true);
+    return;
+  }
+
+  if (newPassword !== confirmNewPassword) {
+    showModalMessage(passwordModalMessage, "Die neuen Passwörter stimmen nicht überein.", true);
+    return;
+  }
+
+  if (currentPassword === newPassword) {
+    showModalMessage(passwordModalMessage, "Das neue Passwort darf nicht identisch mit dem alten sein.", true);
+    return;
+  }
+
+  showModalMessage(passwordModalMessage, "Aktuelles Passwort wird geprüft...");
+
+  const passwordIsCorrect = await verifyCurrentPassword(currentPassword);
+
+  if (!passwordIsCorrect) {
+    showModalMessage(passwordModalMessage, "Aktuelles Passwort ist falsch.", true);
+    return;
+  }
+
+  showModalMessage(passwordModalMessage, "Passwort wird geändert...");
+
+  const { error } = await lucidSupabase.auth.updateUser({
+    password: newPassword
+  });
+
+  if (error) {
+    console.error("Passwort konnte nicht geändert werden:", error);
+    showModalMessage(passwordModalMessage, "Passwort konnte nicht geändert werden.", true);
+    return;
+  }
+
+  showModalMessage(passwordModalMessage, "Passwort erfolgreich geändert.");
+
+  setTimeout(() => {
+    closePasswordModal();
+  }, 1800);
 });
 
 realityCheckForm.addEventListener("submit", async (event) => {
@@ -414,7 +629,6 @@ realityCheckForm.addEventListener("submit", async (event) => {
   }
 
   const checkData = {
-    user_id: currentUser.id,
     title: title,
     text: text,
     is_active: realityActiveInput.checked,
@@ -435,7 +649,10 @@ realityCheckForm.addEventListener("submit", async (event) => {
   } else {
     const response = await lucidSupabase
       .from("custom_reality_checks")
-      .insert(checkData);
+      .insert({
+        user_id: currentUser.id,
+        ...checkData
+      });
 
     error = response.error;
   }
@@ -460,6 +677,25 @@ realityModalOverlay.addEventListener("click", (event) => {
   }
 });
 
+closeDeleteRealityModalBtn.addEventListener("click", closeDeleteRealityModal);
+cancelDeleteRealityBtn.addEventListener("click", closeDeleteRealityModal);
+confirmDeleteRealityBtn.addEventListener("click", confirmDeleteRealityCheck);
+
+deleteRealityModalOverlay.addEventListener("click", (event) => {
+  if (event.target === deleteRealityModalOverlay) {
+    closeDeleteRealityModal();
+  }
+});
+
+openPasswordModalBtn.addEventListener("click", openPasswordModal);
+closePasswordModalBtn.addEventListener("click", closePasswordModal);
+
+passwordModalOverlay.addEventListener("click", (event) => {
+  if (event.target === passwordModalOverlay) {
+    closePasswordModal();
+  }
+});
+
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".reality-menu-wrapper")) {
     closeAllRealityMenus();
@@ -472,6 +708,8 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 async function initProfile() {
+  initGoalSliders();
+
   await loadProfile();
 
   if (!currentUser) return;

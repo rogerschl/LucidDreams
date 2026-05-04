@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traumarchiv | LucidDreams</title>
 
-  <link rel="stylesheet" href="./css/dream-archive.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <link rel="stylesheet" href="./css/dream-archive.css?v=6">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,8 +55,25 @@
         </div>
 
         <div class="filter-group">
+          <label for="dreamSignFilter">Traumzeichen</label>
+          <select id="dreamSignFilter">
+            <option value="Alle">Alle</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
           <label for="dateFilter">Datum</label>
-          <input type="date" id="dateFilter">
+          <input type="text" id="dateFilter" placeholder="Datum auswählen">
+        </div>
+
+        <div class="filter-group">
+          <label for="sortFilter">Sortierung</label>
+          <select id="sortFilter">
+            <option value="date-desc">Neueste zuerst</option>
+            <option value="date-asc">Älteste zuerst</option>
+            <option value="title-asc">Titel A–Z</option>
+            <option value="title-desc">Titel Z–A</option>
+          </select>
         </div>
 
         <button type="button" class="reset-filters" id="resetFilters">
@@ -74,8 +93,8 @@
     <div class="dream-modal" id="dreamModal">
 
       <div class="modal-actions">
-        <button class="modal-menu-btn" id="modalMenuBtn">⋮</button>
-        <button class="modal-close" id="closeModalBtn">×</button>
+        <button class="modal-menu-btn" id="modalMenuBtn" type="button">⋮</button>
+        <button class="modal-close" id="closeModalBtn" type="button">×</button>
 
         <div class="modal-menu hidden" id="modalMenu">
           <button type="button" id="editDreamBtn">Bearbeiten</button>
@@ -120,7 +139,7 @@
         <div class="edit-row">
           <div class="edit-group">
             <label for="editDate">Datum</label>
-            <input type="date" id="editDate">
+            <input type="text" id="editDate" placeholder="Datum auswählen">
           </div>
 
           <div class="edit-group">
@@ -284,8 +303,36 @@
     </div>
   </div>
 
+  <!-- MESSAGE MODAL -->
+  <div class="message-modal-overlay hidden" id="archiveMessageOverlay">
+    <div class="message-modal">
+
+      <button type="button" class="message-close" id="archiveMessageCloseBtn">
+        ×
+      </button>
+
+      <span class="tag">Hinweis</span>
+
+      <h2 id="archiveMessageTitle">Hinweis</h2>
+
+      <p id="archiveMessageText">
+        Nachricht
+      </p>
+
+      <button type="button" class="message-ok-btn" id="archiveMessageOkBtn">
+        Verstanden
+      </button>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/de.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
+  <script src="./js/auth-guard.js"></script>
   <script src="./js/dream-archive.js"></script>
 </body>
 </html>

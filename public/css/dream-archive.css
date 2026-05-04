@@ -135,7 +135,7 @@ body::before {
 
 .archive-filters {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 0.8fr auto;
+  grid-template-columns: 1.4fr 1fr 1fr 0.9fr 1fr auto;
   gap: 14px;
   align-items: end;
   margin-bottom: 26px;
@@ -176,10 +176,6 @@ body::before {
 
 .filter-group input::placeholder {
   color: rgba(255,255,255,0.35);
-}
-
-.filter-group select option {
-  color: #101525;
 }
 
 .reset-filters {
@@ -350,7 +346,8 @@ body::before {
 
 .dream-modal-overlay,
 .delete-modal-overlay,
-.confirm-modal-overlay {
+.confirm-modal-overlay,
+.message-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(4, 8, 16, 0.72);
@@ -364,12 +361,14 @@ body::before {
 
 .dream-modal-overlay.active,
 .delete-modal-overlay:not(.hidden),
-.confirm-modal-overlay:not(.hidden) {
+.confirm-modal-overlay:not(.hidden),
+.message-modal-overlay:not(.hidden) {
   display: flex;
 }
 
 .delete-modal-overlay,
-.confirm-modal-overlay {
+.confirm-modal-overlay,
+.message-modal-overlay {
   z-index: 1000;
 }
 
@@ -379,7 +378,8 @@ body::before {
 
 .dream-modal,
 .delete-modal,
-.confirm-modal {
+.confirm-modal,
+.message-modal {
   position: relative;
   width: 100%;
   max-width: 760px;
@@ -393,7 +393,8 @@ body::before {
 }
 
 .delete-modal,
-.confirm-modal {
+.confirm-modal,
+.message-modal {
   max-width: 560px;
 }
 
@@ -411,7 +412,8 @@ body::before {
 .modal-menu-btn,
 .modal-close,
 .delete-close,
-.confirm-close {
+.confirm-close,
+.message-close {
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -427,7 +429,8 @@ body::before {
 }
 
 .delete-close,
-.confirm-close {
+.confirm-close,
+.message-close {
   position: absolute;
   top: 18px;
   right: 18px;
@@ -445,7 +448,8 @@ body::before {
 .modal-menu-btn:hover,
 .modal-close:hover,
 .delete-close:hover,
-.confirm-close:hover {
+.confirm-close:hover,
+.message-close:hover {
   background: rgba(255,255,255,0.16);
 }
 
@@ -509,7 +513,8 @@ body::before {
 
 .modal-top h2,
 .delete-modal h2,
-.confirm-modal h2 {
+.confirm-modal h2,
+.message-modal h2 {
   font-size: clamp(34px, 4vw, 52px);
   line-height: 1;
   letter-spacing: -0.06em;
@@ -549,7 +554,8 @@ body::before {
 
 .modal-section p,
 .delete-modal p,
-.confirm-modal p {
+.confirm-modal p,
+.message-modal p {
   color: rgba(255,255,255,0.72);
   line-height: 1.7;
   white-space: pre-wrap;
@@ -600,10 +606,6 @@ body::before {
   font-size: 15px;
   font-family: "Inter", sans-serif;
   outline: none;
-}
-
-.edit-group select option {
-  color: #101525;
 }
 
 .edit-group textarea {
@@ -734,7 +736,8 @@ body::before {
 .cancel-edit-btn,
 .primary-action,
 .secondary-action,
-.danger-action {
+.danger-action,
+.message-ok-btn {
   flex: 1;
   min-width: 190px;
   padding: 17px 24px;
@@ -785,6 +788,204 @@ body::before {
   transform: translateY(-2px);
   background: linear-gradient(135deg, #ff5c74, #bf1831);
   box-shadow: 0 20px 50px rgba(217, 31, 58, 0.32);
+}
+
+.message-ok-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #8d63ff, #b06cff, #d946ef);
+  color: #ffffff;
+}
+
+.message-ok-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(168,85,247,0.28);
+}
+
+/* PRETTY DATEPICKER + SELECTS */
+
+.flatpickr-calendar {
+  background: linear-gradient(180deg, rgba(20,24,38,0.98), rgba(10,12,20,0.98));
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+  border-radius: 22px;
+  color: #ffffff;
+  overflow: hidden;
+  padding: 14px 14px 10px;
+}
+
+.flatpickr-months,
+.flatpickr-weekdays {
+  background: transparent;
+}
+
+.flatpickr-months {
+  margin-bottom: 6px;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month,
+.flatpickr-current-month input.cur-year,
+.flatpickr-weekday {
+  color: #ffffff;
+  fill: #ffffff;
+}
+
+.flatpickr-weekday {
+  color: #ffffff !important;
+  font-weight: 800;
+  opacity: 1;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: #ffffff !important;
+  font-weight: 800;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  padding: 10px !important;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+  fill: #ffffff !important;
+}
+
+.flatpickr-days {
+  padding: 0 6px 8px;
+}
+
+.dayContainer {
+  gap: 2px;
+}
+
+.flatpickr-day {
+  color: rgba(255,255,255,0.86);
+  border-radius: 14px;
+  border: none;
+  background: transparent;
+}
+
+.flatpickr-day:hover {
+  background: rgba(176,108,255,0.16);
+  color: #ffffff;
+}
+
+.flatpickr-day.today {
+  border: 1px solid rgba(176,108,255,0.55);
+  color: #ffffff;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: #9b6bff;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(155,107,255,0.35);
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.flatpickr-day.flatpickr-disabled {
+  color: rgba(255,255,255,0.22);
+}
+
+.flatpickr-monthDropdown-months,
+.numInputWrapper input {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+/* CHOICES */
+
+.choices {
+  margin-bottom: 0;
+}
+
+.choices__inner {
+  min-height: auto;
+  padding: 15px 16px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  background: rgba(255,255,255,0.07) !important;
+  color: #ffffff !important;
+  font-size: 15px;
+  font-family: "Inter", sans-serif;
+  transition: 0.25s ease;
+}
+
+.choices[data-type*="select-one"] .choices__inner {
+  padding-bottom: 15px !important;
+}
+
+.choices__list--single {
+  padding: 0;
+  color: #ffffff !important;
+}
+
+.choices__list--single .choices__item {
+  color: #ffffff !important;
+}
+
+.choices__placeholder {
+  opacity: 0.5;
+}
+
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+  margin-top: 8px;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  background: linear-gradient(180deg, rgba(20,24,38,0.98), rgba(10,12,20,0.98)) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  overflow: hidden;
+  z-index: 2000;
+}
+
+.choices__list--dropdown .choices__item,
+.choices__list[aria-expanded] .choices__item {
+  padding: 14px 16px;
+  color: rgba(255,255,255,0.84) !important;
+  font-size: 15px;
+  background: transparent !important;
+}
+
+.choices__list--dropdown .choices__item--selectable.is-highlighted,
+.choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+  background: rgba(155,107,255,0.22) !important;
+  color: #ffffff !important;
+}
+
+.choices__list--dropdown .choices__item--selectable.is-selected,
+.choices__list[aria-expanded] .choices__item--selectable.is-selected {
+  background: rgba(155,107,255,0.30) !important;
+  color: #ffffff !important;
+}
+
+.choices[data-type*="select-one"]::after {
+  border-color: #ffffff transparent transparent transparent;
+  right: 16px;
+}
+
+.choices.is-focused .choices__inner,
+.choices.is-open .choices__inner {
+  border-color: rgba(155,107,255,0.65) !important;
+  background: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 0 0 4px rgba(155,107,255,0.12) !important;
+  border-radius: 16px !important;
+}
+
+.choices.is-open[data-type*="select-one"]::after {
+  border-color: transparent transparent #ffffff transparent;
+  margin-top: -7px;
 }
 
 /* RESPONSIVE */
@@ -844,7 +1045,8 @@ body::before {
 
   .dream-modal,
   .delete-modal,
-  .confirm-modal {
+  .confirm-modal,
+  .message-modal {
     padding: 22px;
     border-radius: 22px;
   }
@@ -887,7 +1089,8 @@ body::before {
 
   .primary-action,
   .secondary-action,
-  .danger-action {
+  .danger-action,
+  .message-ok-btn {
     width: 100%;
   }
 }

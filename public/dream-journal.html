@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Traum hinzufügen | LucidDreams</title>
 
-  <link rel="stylesheet" href="./css/dream-journal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+  <link rel="stylesheet" href="./css/dream-journal.css?v=5">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +50,7 @@
           <div class="input-row">
             <div class="input-group">
               <label for="date">Datum</label>
-              <input type="date" id="date">
+              <input type="text" id="date" placeholder="Datum auswählen">
             </div>
 
             <div class="input-group">
@@ -97,7 +99,7 @@
 
               <div class="selected-tags" id="selectedTags"></div>
 
-             <div class="tag-options" id="tagOptions"></div>
+              <div class="tag-options" id="tagOptions"></div>
 
               <div class="new-tag-row">
                 <input type="text" id="newTagInput" placeholder="Neues Traumzeichen hinzufügen">
@@ -160,36 +162,64 @@
   </div>
 
   <!-- DREAM SIGN DELETE CONFIRM MODAL -->
-<div class="confirm-modal-overlay hidden" id="dreamSignConfirmOverlay">
-  <div class="confirm-modal">
+  <div class="confirm-modal-overlay hidden" id="dreamSignConfirmOverlay">
+    <div class="confirm-modal">
 
-    <button type="button" class="confirm-close" id="dreamSignConfirmClose">
-      ×
-    </button>
-
-    <span class="tag">Achtung</span>
-
-    <h2>Traumzeichen löschen?</h2>
-
-    <p id="dreamSignConfirmText">
-      Möchtest du dieses Traumzeichen wirklich löschen? Es wird auch aus allen anderen Träumen entfernt.
-    </p>
-
-    <div class="confirm-actions">
-      <button type="button" class="secondary-action" id="dreamSignCancelBtn">
-        Abbrechen
+      <button type="button" class="confirm-close" id="dreamSignConfirmClose">
+        ×
       </button>
 
-      <button type="button" class="danger-action" id="dreamSignDeleteBtn">
-        Wirklich löschen
-      </button>
+      <span class="tag">Achtung</span>
+
+      <h2>Traumzeichen löschen?</h2>
+
+      <p id="dreamSignConfirmText">
+        Möchtest du dieses Traumzeichen wirklich löschen? Es wird auch aus allen anderen Träumen entfernt.
+      </p>
+
+      <div class="confirm-actions">
+        <button type="button" class="secondary-action" id="dreamSignCancelBtn">
+          Abbrechen
+        </button>
+
+        <button type="button" class="danger-action" id="dreamSignDeleteBtn">
+          Wirklich löschen
+        </button>
+      </div>
+
     </div>
-
   </div>
-</div>
+
+  <!-- MESSAGE MODAL -->
+  <div class="message-modal-overlay hidden" id="journalMessageOverlay">
+    <div class="message-modal">
+
+      <button type="button" class="message-close" id="journalMessageCloseBtn">
+        ×
+      </button>
+
+      <span class="tag">Hinweis</span>
+
+      <h2 id="journalMessageTitle">Hinweis</h2>
+
+      <p id="journalMessageText">
+        Nachricht
+      </p>
+
+      <button type="button" class="message-ok-btn" id="journalMessageOkBtn">
+        Verstanden
+      </button>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/de.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
+  <script src="./js/auth-guard.js"></script>
   <script src="./js/dream-journal.js"></script>
 </body>
 </html>

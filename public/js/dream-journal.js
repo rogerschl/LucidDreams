@@ -22,17 +22,58 @@ const dreamSignCancelBtn = document.getElementById("dreamSignCancelBtn");
 const dreamSignDeleteBtn = document.getElementById("dreamSignDeleteBtn");
 const dreamSignConfirmText = document.getElementById("dreamSignConfirmText");
 
+const journalMessageOverlay = document.getElementById("journalMessageOverlay");
+const journalMessageCloseBtn = document.getElementById("journalMessageCloseBtn");
+const journalMessageOkBtn = document.getElementById("journalMessageOkBtn");
+const journalMessageTitle = document.getElementById("journalMessageTitle");
+const journalMessageText = document.getElementById("journalMessageText");
+
 let selectedTags = [];
 let currentUser = null;
 let allDreamSigns = [];
 let pendingDreamSignDelete = null;
 
-/* HEUTIGES DATUM AUTOMATISCH SETZEN */
+let datePicker = null;
+let clarityChoice = null;
+let moodChoice = null;
+let sleepChoice = null;
 
 const today = new Date().toISOString().split("T")[0];
 
-if (dateInput && !dateInput.value) {
-  dateInput.value = today;
+/* PRETTY INPUTS */
+
+function initPrettyInputs() {
+  if (dateInput && window.flatpickr) {
+    datePicker = flatpickr(dateInput, {
+      locale: "de",
+      dateFormat: "Y-m-d",
+      altInput: true,
+      altFormat: "d.m.Y",
+      defaultDate: today,
+      allowInput: false,
+      monthSelectorType: "static"
+    });
+  }
+
+  if (window.Choices) {
+    clarityChoice = new Choices(clarityInput, {
+      searchEnabled: false,
+      shouldSort: false,
+      itemSelectText: ""
+    });
+
+    moodChoice = new Choices(moodInput, {
+      searchEnabled: false,
+      shouldSort: false,
+      itemSelectText: ""
+    });
+
+    sleepChoice = new Choices(sleepInput, {
+      searchEnabled: false,
+      shouldSort: false,
+      itemSelectText: ""
+    });
+  }
 }
 
 /* LOGIN-SCHUTZ */
@@ -48,6 +89,38 @@ async function protectPage() {
   return data.session.user;
 }
 
+/* MESSAGE MODAL */
+
+function openJournalMessage(text, title = "Hinweis") {
+  if (!journalMessageOverlay) return;
+
+  journalMessageTitle.textContent = title;
+  journalMessageText.textContent = text;
+  journalMessageOverlay.classList.remove("hidden");
+}
+
+function closeJournalMessage() {
+  if (!journalMessageOverlay) return;
+
+  journalMessageOverlay.classList.add("hidden");
+}
+
+if (journalMessageCloseBtn) {
+  journalMessageCloseBtn.addEventListener("click", closeJournalMessage);
+}
+
+if (journalMessageOkBtn) {
+  journalMessageOkBtn.addEventListener("click", closeJournalMessage);
+}
+
+if (journalMessageOverlay) {
+  journalMessageOverlay.addEventListener("click", (event) => {
+    if (event.target === journalMessageOverlay) {
+      closeJournalMessage();
+    }
+  });
+}
+
 /* SUCCESS MODAL */
 
 function openSuccessModal() {
@@ -59,6 +132,7 @@ function closeSuccessModal() {
   if (!successModalOverlay) return;
   successModalOverlay.classList.add("hidden");
 }
+
 function openDreamSignConfirmModal(dreamSignId, dreamSignName) {
   pendingDreamSignDelete = {
     id: dreamSignId,
@@ -75,6 +149,7 @@ function closeDreamSignConfirmModal() {
   dreamSignConfirmOverlay.classList.add("hidden");
   pendingDreamSignDelete = null;
 }
+
 async function confirmDreamSignDelete() {
   if (!pendingDreamSignDelete) return;
 
@@ -88,7 +163,7 @@ async function confirmDreamSignDelete() {
 
   if (error) {
     console.error("Traumzeichen konnte nicht gelöscht werden:", error);
-    alert("Traumzeichen konnte nicht gelöscht werden.");
+    openJournalMessage("Traumzeichen konnte nicht gelöscht werden.");
     return;
   }
 
@@ -119,6 +194,7 @@ if (successModalOverlay) {
     }
   });
 }
+
 if (dreamSignConfirmClose) {
   dreamSignConfirmClose.addEventListener("click", closeDreamSignConfirmModal);
 }
@@ -257,6 +333,7 @@ async function loadDreamSigns() {
     createTagButton(dreamSign);
   });
 }
+
 async function saveDreamSign(tagName) {
   const { data, error } = await lucidSupabase
     .from("dream_signs")
@@ -288,7 +365,7 @@ addTagBtn.addEventListener("click", async () => {
   const savedTag = await saveDreamSign(newTag);
 
   if (!savedTag) {
-    alert("Traumzeichen konnte nicht gespeichert werden.");
+    openJournalMessage("Traumzeichen konnte nicht gespeichert werden.");
     return;
   }
 
@@ -319,7 +396,7 @@ dreamForm.addEventListener("submit", async (event) => {
   const description = descriptionInput.value.trim();
 
   if (title === "" || description === "") {
-    alert("Bitte gib mindestens einen Titel und eine Beschreibung ein.");
+    openJournalMessage("Bitte gib mindestens einen Titel und eine Beschreibung ein.");
     return;
   }
 
@@ -344,7 +421,7 @@ dreamForm.addEventListener("submit", async (event) => {
 
   if (dreamError) {
     console.error("Traum konnte nicht gespeichert werden:", dreamError);
-    alert("Traum konnte nicht gespeichert werden.");
+    openJournalMessage("Traum konnte nicht gespeichert werden.");
     return;
   }
 
@@ -368,9 +445,15 @@ dreamForm.addEventListener("submit", async (event) => {
 
   dreamForm.reset();
 
-  if (dateInput) {
+  if (datePicker) {
+    datePicker.setDate(today, true);
+  } else if (dateInput) {
     dateInput.value = today;
   }
+
+  if (clarityChoice) clarityChoice.setChoiceByValue("Normaler Traum");
+  if (moodChoice) moodChoice.setChoiceByValue("Neutral");
+  if (sleepChoice) sleepChoice.setChoiceByValue("Gut");
 
   selectedTags = [];
   updateActiveButtons();
@@ -382,6 +465,8 @@ dreamForm.addEventListener("submit", async (event) => {
 /* START */
 
 async function initDreamJournal() {
+  initPrettyInputs();
+
   currentUser = await protectPage();
 
   if (!currentUser) return;

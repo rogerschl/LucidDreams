@@ -17,10 +17,13 @@ registerForm.addEventListener("submit", async (event) => {
     return;
   }
 
+  const redirectUrl = new URL("./check-email.html", window.location.href).href;
+
   const { data, error } = await lucidSupabase.auth.signUp({
     email: email,
     password: password,
     options: {
+      emailRedirectTo: redirectUrl,
       data: {
         display_name: name
       }
@@ -28,10 +31,32 @@ registerForm.addEventListener("submit", async (event) => {
   });
 
   if (error) {
+    const message = error.message.toLowerCase();
+
+    if (
+      message.includes("already registered") ||
+      message.includes("already exists") ||
+      message.includes("user already")
+    ) {
+      alert("Diese E-Mail ist bereits registriert. Bitte melde dich an.");
+      window.location.href = "./login.html";
+      return;
+    }
+
     alert("Registrierung fehlgeschlagen: " + error.message);
     return;
   }
 
-  alert("Registrierung erfolgreich. Du kannst dich jetzt anmelden.");
-  window.location.href = "./login.html";
+  if (data.user && data.user.identities && data.user.identities.length === 0) {
+    alert("Diese E-Mail ist bereits registriert. Bitte melde dich an.");
+    window.location.href = "./login.html";
+    return;
+  }
+
+  if (data.session) {
+    window.location.href = "./dashboard.html";
+    return;
+  }
+
+  window.location.href = "./check-email.html";
 });

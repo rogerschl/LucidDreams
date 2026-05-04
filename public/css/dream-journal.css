@@ -175,10 +175,6 @@ body::before {
   transition: 0.25s ease;
 }
 
-.input-group select option {
-  color: #101525;
-}
-
 .input-group textarea {
   min-height: 210px;
   resize: vertical;
@@ -426,68 +422,6 @@ body::before {
   transform: translateY(-2px);
 }
 
-/* RESPONSIVE */
-
-@media (max-width: 650px) {
-  .main {
-    padding: 20px 16px 50px;
-  }
-
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .back-dashboard {
-    width: 100%;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .dream-form {
-    padding: 22px;
-    border-radius: 26px;
-  }
-
-  .input-row {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-
-  .topbar h1 {
-    font-size: 38px;
-  }
-
-  .form-header h2 {
-    font-size: 28px;
-  }
-
-  .form-header p {
-    font-size: 16px;
-  }
-
-  .new-tag-row {
-    grid-template-columns: 1fr;
-  }
-
-  .new-tag-row button {
-    padding: 15px 18px;
-  }
-
-  .success-modal {
-    padding: 24px;
-    border-radius: 26px;
-  }
-
-  .success-actions {
-    flex-direction: column;
-  }
-
-  .primary-action,
-  .secondary-action {
-    width: 100%;
-  }
-}
 /* DREAM SIGN DELETE CONFIRM MODAL */
 
 .confirm-modal-overlay {
@@ -582,21 +516,6 @@ body::before {
   box-shadow: 0 20px 50px rgba(217, 31, 58, 0.32);
 }
 
-@media (max-width: 650px) {
-  .confirm-modal {
-    padding: 24px;
-    border-radius: 26px;
-  }
-
-  .confirm-actions {
-    flex-direction: column;
-  }
-
-  .danger-action,
-  .secondary-action {
-    width: 100%;
-  }
-}
 .tag-wrapper {
   display: inline-flex;
   align-items: center;
@@ -625,4 +544,341 @@ body::before {
 .delete-tag-btn:hover {
   background: rgba(255,80,120,0.22);
   transform: scale(1.05);
+}
+
+/* MESSAGE MODAL */
+
+.message-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(4, 8, 16, 0.72);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.message-modal-overlay.hidden {
+  display: none;
+}
+
+.message-modal {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  padding: 32px;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(20,24,38,0.98), rgba(10,12,20,0.98));
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+}
+
+.message-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: #ffffff;
+  font-size: 26px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.message-close:hover {
+  background: rgba(255,255,255,0.16);
+}
+
+.message-modal h2 {
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  margin-bottom: 16px;
+}
+
+.message-modal p {
+  color: rgba(255,255,255,0.72);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 26px;
+}
+
+.message-ok-btn {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 17px 22px;
+  background: linear-gradient(135deg, #8d63ff, #b06cff, #d946ef);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.message-ok-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px rgba(168,85,247,0.28);
+}
+
+/* PRETTY DATEPICKER + SELECTS */
+
+.flatpickr-calendar {
+  background: linear-gradient(180deg, rgba(20,24,38,0.98), rgba(10,12,20,0.98));
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+  border-radius: 22px;
+  color: #ffffff;
+  overflow: hidden;
+  padding: 14px 14px 10px;
+}
+
+.flatpickr-months,
+.flatpickr-weekdays {
+  background: transparent;
+}
+
+.flatpickr-months {
+  margin-bottom: 6px;
+}
+
+.flatpickr-months .flatpickr-month,
+.flatpickr-current-month,
+.flatpickr-current-month input.cur-year,
+.flatpickr-weekday {
+  color: #ffffff;
+  fill: #ffffff;
+}
+
+.flatpickr-weekday {
+  color: #ffffff !important;
+  font-weight: 800;
+  opacity: 1;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: #ffffff !important;
+  font-weight: 800;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  padding: 10px !important;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+  fill: #ffffff !important;
+}
+
+.flatpickr-days {
+  padding: 0 6px 8px;
+}
+
+.dayContainer {
+  gap: 2px;
+}
+
+.flatpickr-day {
+  color: rgba(255,255,255,0.86);
+  border-radius: 14px;
+  border: none;
+  background: transparent;
+}
+
+.flatpickr-day:hover {
+  background: rgba(176,108,255,0.16);
+  color: #ffffff;
+}
+
+.flatpickr-day.today {
+  border: 1px solid rgba(176,108,255,0.55);
+  color: #ffffff;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+  background: #9b6bff;
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(155,107,255,0.35);
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.flatpickr-day.flatpickr-disabled {
+  color: rgba(255,255,255,0.22);
+}
+
+.flatpickr-monthDropdown-months,
+.numInputWrapper input {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+/* CHOICES */
+
+.choices {
+  margin-bottom: 0;
+}
+
+.choices__inner {
+  min-height: auto;
+  padding: 17px 18px !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255,255,255,0.10) !important;
+  background: rgba(255,255,255,0.07) !important;
+  color: #ffffff !important;
+  font-size: 16px;
+  font-family: "Inter", sans-serif;
+  transition: 0.25s ease;
+}
+
+.choices[data-type*="select-one"] .choices__inner {
+  padding-bottom: 17px !important;
+}
+
+.choices__list--single {
+  padding: 0;
+  color: #ffffff !important;
+}
+
+.choices__list--single .choices__item {
+  color: #ffffff !important;
+}
+
+.choices__placeholder {
+  opacity: 0.5;
+}
+
+.choices__list--dropdown,
+.choices__list[aria-expanded] {
+  margin-top: 8px;
+  border-radius: 18px !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  background: linear-gradient(180deg, rgba(20,24,38,0.98), rgba(10,12,20,0.98)) !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  overflow: hidden;
+  z-index: 999;
+}
+
+.choices__list--dropdown .choices__item,
+.choices__list[aria-expanded] .choices__item {
+  padding: 14px 16px;
+  color: rgba(255,255,255,0.84) !important;
+  font-size: 15px;
+  background: transparent !important;
+}
+
+.choices__list--dropdown .choices__item--selectable.is-highlighted,
+.choices__list[aria-expanded] .choices__item--selectable.is-highlighted {
+  background: rgba(155,107,255,0.22) !important;
+  color: #ffffff !important;
+}
+
+.choices__list--dropdown .choices__item--selectable.is-selected,
+.choices__list[aria-expanded] .choices__item--selectable.is-selected {
+  background: rgba(155,107,255,0.30) !important;
+  color: #ffffff !important;
+}
+
+.choices[data-type*="select-one"]::after {
+  border-color: #ffffff transparent transparent transparent;
+  right: 16px;
+}
+
+.choices.is-focused .choices__inner,
+.choices.is-open .choices__inner {
+  border-color: rgba(155,107,255,0.65) !important;
+  background: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 0 0 4px rgba(155,107,255,0.12) !important;
+  border-radius: 18px !important;
+}
+
+.choices.is-open[data-type*="select-one"]::after {
+  border-color: transparent transparent #ffffff transparent;
+  margin-top: -7px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 650px) {
+  .main {
+    padding: 20px 16px 50px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .back-dashboard {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .dream-form {
+    padding: 22px;
+    border-radius: 26px;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .topbar h1 {
+    font-size: 38px;
+  }
+
+  .form-header h2 {
+    font-size: 28px;
+  }
+
+  .form-header p {
+    font-size: 16px;
+  }
+
+  .new-tag-row {
+    grid-template-columns: 1fr;
+  }
+
+  .new-tag-row button {
+    padding: 15px 18px;
+  }
+
+  .success-modal,
+  .confirm-modal,
+  .message-modal {
+    padding: 24px;
+    border-radius: 26px;
+  }
+
+  .success-actions,
+  .confirm-actions {
+    flex-direction: column;
+  }
+
+  .primary-action,
+  .secondary-action,
+  .danger-action {
+    width: 100%;
+  }
 }

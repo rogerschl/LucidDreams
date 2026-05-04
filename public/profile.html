@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Profil | LucidDreams</title>
 
-  <link rel="stylesheet" href="./css/profile.css">
+  <link rel="stylesheet" href="./css/profile.css?v=3">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,15 +37,18 @@
           <input type="text" id="nameInput" placeholder="Dein Name">
         </div>
 
-        <div class="input-group">
-          <label for="emailInput">E-Mail</label>
-          <input type="email" id="emailInput" placeholder="deine@email.de">
+        <div class="account-info-box">
+          <span>Aktuelle E-Mail</span>
+          <strong id="currentEmailText">Wird geladen...</strong>
         </div>
 
-        <div class="input-group">
-          <label for="passwordInput">Neues Passwort</label>
-          <input type="password" id="passwordInput" placeholder="Neues Passwort">
+        <div class="account-action-grid single-action">
+          <button type="button" class="account-action-btn" id="openPasswordModalBtn">
+            Passwort ändern
+          </button>
         </div>
+
+        <p class="goal-save-message" id="profileSaveMessage"></p>
 
         <button type="submit" class="save-btn">
           Profil speichern
@@ -59,22 +62,61 @@
       <!-- ZIELE -->
       <form class="profile-card" id="goalsForm">
         <span class="tag">Ziele</span>
-        <h2>Tagesziele festlegen</h2>
+        <h2>Ziele festlegen</h2>
 
-        <div class="input-group">
-          <label for="realityGoalInput">Reality Checks pro Tag</label>
-          <input type="number" id="realityGoalInput" min="1" max="30" placeholder="z. B. 8">
+        <div class="goal-slider-card" id="realityGoalCard">
+          <button type="button" class="goal-slider-header" data-goal-toggle="realityGoalCard">
+            <div>
+              <span>Reality Checks pro Tag</span>
+              <small>Wie oft möchtest du täglich bewusst prüfen?</small>
+            </div>
+
+            <strong>
+              <span id="realityGoalValue">8</span>x
+            </strong>
+          </button>
+
+          <div class="goal-slider-body">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>30</span>
+            </div>
+
+            <input type="range" id="realityGoalInput" min="1" max="30" value="8">
+
+            <p class="slider-result">
+              <span id="realityGoalText">8 Reality Checks pro Tag</span>
+            </p>
+          </div>
         </div>
 
-        <div class="input-group">
-          <label for="dreamGoalInput">Traumeinträge pro Woche</label>
-          <input type="number" id="dreamGoalInput" min="1" max="14" placeholder="z. B. 5">
+        <div class="goal-slider-card" id="dreamGoalCard">
+          <button type="button" class="goal-slider-header" data-goal-toggle="dreamGoalCard">
+            <div>
+              <span>Traumeinträge pro Woche</span>
+              <small>Wie viele Träume willst du pro Woche eintragen?</small>
+            </div>
+
+            <strong>
+              <span id="dreamGoalValue">5</span>x
+            </strong>
+          </button>
+
+          <div class="goal-slider-body">
+            <div class="slider-labels">
+              <span>1</span>
+              <span>7</span>
+            </div>
+
+            <input type="range" id="dreamGoalInput" min="1" max="7" value="5">
+
+            <p class="slider-result">
+              <span id="dreamGoalText">5 Traumeinträge pro Woche</span>
+            </p>
+          </div>
         </div>
 
-        <div class="input-group">
-          <label for="personalGoalInput">Persönliches Ziel</label>
-          <textarea id="personalGoalInput" placeholder="z. B. Ich möchte meinen ersten luziden Traum erleben."></textarea>
-        </div>
+        <p class="goal-save-message" id="goalSaveMessage"></p>
 
         <button type="submit" class="save-btn">
           Ziele speichern
@@ -158,8 +200,74 @@
     </div>
   </div>
 
+  <!-- DELETE REALITY CHECK MODAL -->
+  <div class="modal-overlay hidden" id="deleteRealityModalOverlay">
+    <div class="modal-card delete-modal-card">
+
+      <button type="button" class="modal-close" id="closeDeleteRealityModalBtn">
+        ×
+      </button>
+
+      <span class="tag danger-tag">Löschen</span>
+      <h2>Reality Check löschen?</h2>
+
+      <p class="delete-text">
+        Möchtest du diesen Reality Check wirklich löschen?
+      </p>
+
+      <div class="delete-actions">
+        <button type="button" class="cancel-delete-btn" id="cancelDeleteRealityBtn">
+          Abbrechen
+        </button>
+
+        <button type="button" class="confirm-delete-btn" id="confirmDeleteRealityBtn">
+          Löschen
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PASSWORD CHANGE MODAL -->
+  <div class="modal-overlay hidden" id="passwordModalOverlay">
+    <div class="modal-card account-modal-card">
+
+      <button type="button" class="modal-close" id="closePasswordModalBtn">
+        ×
+      </button>
+
+      <span class="tag">Passwort</span>
+      <h2>Passwort ändern</h2>
+
+      <form id="passwordChangeForm">
+        <div class="input-group">
+          <label for="currentPasswordInput">Aktuelles Passwort</label>
+          <input type="password" id="currentPasswordInput" placeholder="Aktuelles Passwort">
+        </div>
+
+        <div class="input-group">
+          <label for="newPasswordInput">Neues Passwort</label>
+          <input type="password" id="newPasswordInput" placeholder="Mindestens 6 Zeichen">
+        </div>
+
+        <div class="input-group">
+          <label for="confirmNewPasswordInput">Neues Passwort wiederholen</label>
+          <input type="password" id="confirmNewPasswordInput" placeholder="Neues Passwort wiederholen">
+        </div>
+
+        <p class="modal-message" id="passwordModalMessage"></p>
+
+        <button type="submit" class="save-btn">
+          Passwort ändern
+        </button>
+      </form>
+
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./js/supabase-client.js"></script>
+  <script src="./js/auth-guard.js"></script>
   <script src="./js/profile.js"></script>
 </body>
 </html>
