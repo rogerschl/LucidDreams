@@ -54,7 +54,6 @@ let customRealityChecks = [];
 let editingRealityCheckId = null;
 let deletingRealityCheckId = null;
 
-
 async function protectPage() {
   const { data, error } = await lucidSupabase.auth.getSession();
 
@@ -219,13 +218,15 @@ async function loadProfile() {
   await syncProfileEmailWithAuth(currentUser.email);
 
   nameInput.value = currentProfile.display_name || "";
-  currentEmailText.textContent = currentUser.email || currentProfile.email || "Keine E-Mail gefunden";
+  currentEmailText.textContent =
+    currentUser.email || currentProfile.email || "Keine E-Mail gefunden";
 
   realityGoalInput.value = Number(currentProfile.reality_goal) || 8;
   dreamGoalInput.value = Math.min(Number(currentProfile.dream_goal) || 5, 7);
 
   updateGoalSliderUI();
 }
+
 function sortRealityChecks(checks) {
   return checks.sort((a, b) => {
     const scoreA =
@@ -295,9 +296,9 @@ async function createRecommendedRealityChecksIfNeeded() {
       title: template.title,
       text: template.text,
       source: "recommended",
-      is_active:true,
+      is_active: true,
       use_for_notifications: true,
-      is_favorite: alreadyHasFavorite ? false : index === 1
+      is_favorite: alreadyHasFavorite ? false : index === 0
     };
   });
 
@@ -314,6 +315,72 @@ async function createRecommendedRealityChecksIfNeeded() {
   await loadCustomRealityChecks();
 }
 
+async function updateRealityCheckQuick(checkId, updates, successText) {
+  if (!currentUser) return;
+
+  if (updates.is_favorite === true) {
+    const { error: resetError } = await lucidSupabase
+      .from("user_reality_checks")
+      .update({ is_favorite: false })
+      .eq("user_id", currentUser.id);
+
+    if (resetError) {
+      console.error("Favoriten konnten nicht zurückgesetzt werden:", resetError);
+      showMessage("Favorit konnte nicht gesetzt werden.");
+      return;
+    }
+  }
+
+  const { error } = await lucidSupabase
+    .from("user_reality_checks")
+    .update(updates)
+    .eq("id", checkId)
+    .eq("user_id", currentUser.id);
+
+  if (error) {
+    console.error("Reality Check konnte nicht aktualisiert werden:", error);
+    showMessage("Reality Check konnte nicht aktualisiert werden.");
+    return;
+  }
+
+  showMessage(successText);
+  await loadCustomRealityChecks();
+}
+
+function toggleRealityActive(checkId) {
+  const check = customRealityChecks.find((item) => item.id === checkId);
+  if (!check) return;
+
+  updateRealityCheckQuick(
+    checkId,
+    { is_active: !check.is_active },
+    check.is_active ? "Reality Check deaktiviert." : "Reality Check aktiviert."
+  );
+}
+
+function toggleRealityNotification(checkId) {
+  const check = customRealityChecks.find((item) => item.id === checkId);
+  if (!check) return;
+
+  updateRealityCheckQuick(
+    checkId,
+    { use_for_notifications: !check.use_for_notifications },
+    check.use_for_notifications
+      ? "Benachrichtigung deaktiviert."
+      : "Benachrichtigung aktiviert."
+  );
+}
+
+function toggleRealityFavorite(checkId) {
+  const check = customRealityChecks.find((item) => item.id === checkId);
+  if (!check) return;
+
+  updateRealityCheckQuick(
+    checkId,
+    { is_favorite: !check.is_favorite },
+    check.is_favorite ? "Favorit entfernt." : "Favorit gesetzt."
+  );
+}
 
 function renderCustomRealityChecks() {
   realityCheckList.innerHTML = "";
@@ -333,24 +400,40 @@ function renderCustomRealityChecks() {
       item.classList.add("favorite-reality-item");
     }
 
+    const sourceLabel =
+      check.source === "recommended" ? "Empfohlen" : "Eigen";
+
     item.innerHTML = `
       <div class="reality-item-top">
         <div class="reality-main">
           <h3>${escapeHTML(check.title)}</h3>
           <p>${escapeHTML(check.text)}</p>
 
-          <div class="reality-badges">
-            <span class="reality-badge ${check.is_active ? "active" : ""}">
+          <div class="reality-source-row">
+            <span class="reality-source-label">${sourceLabel}</span>
+          </div>
+
+          <div class="reality-quick-actions">
+            <button 
+              type="button" 
+              class="rc-quick-btn ${check.is_active ? "active" : ""}" 
+              onclick="toggleRealityActive('${check.id}')">
               ${check.is_active ? "Aktiv" : "Inaktiv"}
-            </span>
+            </button>
 
-            <span class="reality-badge ${check.use_for_notifications ? "active" : ""}">
-              ${check.use_for_notifications ? "Benachrichtigungen" : "Keine Benachrichtigung"}
-            </span>
+            <button 
+              type="button" 
+              class="rc-quick-btn ${check.use_for_notifications ? "active" : ""}" 
+              onclick="toggleRealityNotification('${check.id}')">
+              ${check.use_for_notifications ? "Benachrichtigung an" : "Benachrichtigung aus"}
+            </button>
 
-            <span class="reality-badge ${check.is_favorite ? "favorite" : ""}">
-              ${check.is_favorite ? "Favorit" : "Kein Favorit"}
-            </span>
+            <button 
+              type="button" 
+              class="rc-quick-btn ${check.is_favorite ? "favorite" : ""}" 
+              onclick="toggleRealityFavorite('${check.id}')">
+              ${check.is_favorite ? "Favorit" : "Favorisieren"}
+            </button>
           </div>
         </div>
 
@@ -648,22 +731,22 @@ realityCheckForm.addEventListener("submit", async (event) => {
   let error;
 
   if (editingRealityCheckId) {
-   const response = await lucidSupabase
-  .from("user_reality_checks")
-  .update(checkData)
-  .eq("id", editingRealityCheckId)
-  .eq("user_id", currentUser.id);
+    const response = await lucidSupabase
+      .from("user_reality_checks")
+      .update(checkData)
+      .eq("id", editingRealityCheckId)
+      .eq("user_id", currentUser.id);
 
     error = response.error;
   } else {
-   const response = await lucidSupabase
-  .from("user_reality_checks")
-  .insert({
-    user_id: currentUser.id,
-    template_id: null,
-    source: "custom",
-    ...checkData
-  });
+    const response = await lucidSupabase
+      .from("user_reality_checks")
+      .insert({
+        user_id: currentUser.id,
+        template_id: null,
+        source: "custom",
+        ...checkData
+      });
 
     error = response.error;
   }
@@ -726,7 +809,7 @@ async function initProfile() {
   if (!currentUser) return;
 
   await loadCustomRealityChecks();
-await createRecommendedRealityChecksIfNeeded();
+  await createRecommendedRealityChecksIfNeeded();
 }
 
 initProfile();

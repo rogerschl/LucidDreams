@@ -17,7 +17,7 @@ registerForm.addEventListener("submit", async (event) => {
     return;
   }
 
-  const redirectUrl = new URL("./check-email.html", window.location.href).href;
+  const redirectUrl = new URL("./login.html", window.location.href).href;
 
   const { data, error } = await lucidSupabase.auth.signUp({
     email: email,
@@ -58,5 +58,6 @@ registerForm.addEventListener("submit", async (event) => {
     return;
   }
 
+  localStorage.setItem("pendingEmail", email);
   window.location.href = "./check-email.html";
 });

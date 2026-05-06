@@ -1080,3 +1080,23 @@ body::after {
 .app.authenticated {
     visibility: visible;
 }
+.resend-message {
+  min-height: 24px;
+  margin: 14px 0 10px;
+  color: #8bc7ff;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: 0.25s ease;
+}
+
+.resend-message.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.resend-message.error {
+  color: #ff9bad;
+}
