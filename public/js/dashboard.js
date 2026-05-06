@@ -24,7 +24,6 @@ const weeklyDreamFill = document.getElementById("weeklyDreamFill");
 const realityGoalText = document.getElementById("realityGoalText");
 const weeklyDreamText = document.getElementById("weeklyDreamText");
 
-
 const dashboardCoursePercent = document.getElementById("dashboardCoursePercent");
 const dashboardCourseProgress = document.getElementById("dashboardCourseProgress");
 const dashboardNextLessonNumber = document.getElementById("dashboardNextLessonNumber");
@@ -154,6 +153,68 @@ async function loadLessonProgressFromSupabase() {
   return (data || []).map((item) => item.lesson_id);
 }
 
+/* RECOMMENDED REALITY CHECKS */
+
+async function createRecommendedRealityChecksIfNeeded() {
+  const { data: existingChecks, error: existingError } = await lucidSupabase
+    .from("user_reality_checks")
+    .select("*")
+    .eq("user_id", currentUser.id);
+
+  if (existingError) {
+    console.error("User-Reality-Checks konnten nicht geladen werden:", existingError);
+    return;
+  }
+
+  const existingTemplateIds = (existingChecks || [])
+    .filter((check) => check.template_id)
+    .map((check) => check.template_id);
+
+  const { data: templates, error: templateError } = await lucidSupabase
+    .from("reality_check_templates")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (templateError) {
+    console.error("Empfohlene Reality Checks konnten nicht geladen werden:", templateError);
+    return;
+  }
+
+  if (!templates || templates.length === 0) return;
+
+  const missingTemplates = templates.filter((template) => {
+    return !existingTemplateIds.includes(template.id);
+  });
+
+  if (missingTemplates.length === 0) return;
+
+  const alreadyHasFavorite = (existingChecks || []).some((check) => {
+    return check.is_favorite === true;
+  });
+
+  const checksToInsert = missingTemplates.map((template, index) => {
+    return {
+      user_id: currentUser.id,
+      template_id: template.id,
+      title: template.title,
+      text: template.text,
+      source: "recommended",
+      is_active: true,
+      use_for_notifications: true,
+      is_favorite: alreadyHasFavorite ? false : index === 1
+    };
+  });
+
+  const { error } = await lucidSupabase
+    .from("user_reality_checks")
+    .insert(checksToInsert);
+
+  if (error) {
+    console.error("Empfohlene Reality Checks konnten nicht erstellt werden:", error);
+  }
+}
+
 /* HELPERS */
 
 function formatDate(dateString) {
@@ -164,14 +225,6 @@ function formatDate(dateString) {
   if (parts.length !== 3) return dateString;
 
   return `${parts[2]}.${parts[1]}.${parts[0]}`;
-}
-
-function getLocalDateKey(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
 }
 
 function getTodayRange() {
@@ -246,8 +299,6 @@ async function getTodayRealityChecks() {
 
   return count || 0;
 }
-
-
 
 /* PROFILE */
 
@@ -331,10 +382,7 @@ async function updateRealityStats() {
       realityGoalText.textContent = "Tagesziel erreicht.";
     }
   }
-
-  
 }
-
 
 /* RECENT DREAMS */
 
@@ -446,7 +494,7 @@ async function renderFavoriteRealityCheck() {
   if (!favoriteRealityCheck || !currentUser) return;
 
   const { data, error } = await lucidSupabase
-    .from("custom_reality_checks")
+    .from("user_reality_checks")
     .select("*")
     .eq("user_id", currentUser.id)
     .eq("is_favorite", true)
@@ -544,6 +592,8 @@ async function initDashboard() {
   currentProfile = await loadProfileFromSupabase();
   dreams = await loadDreamsFromSupabase();
 
+  await createRecommendedRealityChecksIfNeeded();
+
   courses = await loadCoursesFromSupabase();
   modules = await loadModulesFromSupabase();
   lessons = await loadLessonsFromSupabase();
@@ -557,8 +607,6 @@ async function initDashboard() {
   updateCourseDashboard();
   await renderFavoriteRealityCheck();
   renderDreamSigns();
-
-
 }
 
 initDashboard();

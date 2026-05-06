@@ -40,13 +40,88 @@ async function loadProfileFromSupabase() {
   return data;
 }
 
+async function createRecommendedRealityChecksIfNeeded() {
+  const { data: existingChecks, error: existingError } = await lucidSupabase
+    .from("user_reality_checks")
+    .select("*")
+    .eq("user_id", currentUser.id);
+
+  if (existingError) {
+    console.error("User-Reality-Checks konnten nicht geladen werden:", existingError);
+    return;
+  }
+
+  const existingTemplateIds = (existingChecks || [])
+    .filter((check) => check.template_id)
+    .map((check) => check.template_id);
+
+  const { data: templates, error: templateError } = await lucidSupabase
+    .from("reality_check_templates")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (templateError) {
+    console.error("Empfohlene Reality Checks konnten nicht geladen werden:", templateError);
+    return;
+  }
+
+  if (!templates || templates.length === 0) return;
+
+  const missingTemplates = templates.filter((template) => {
+    return !existingTemplateIds.includes(template.id);
+  });
+
+  if (missingTemplates.length === 0) return;
+
+  const alreadyHasFavorite = (existingChecks || []).some((check) => {
+    return check.is_favorite === true;
+  });
+
+  const checksToInsert = missingTemplates.map((template, index) => {
+    return {
+      user_id: currentUser.id,
+      template_id: template.id,
+      title: template.title,
+      text: template.text,
+      source: "recommended",
+      is_active: true,
+      use_for_notifications: true,
+      is_favorite: alreadyHasFavorite ? false : index === 1
+    };
+  });
+
+  const { error } = await lucidSupabase
+    .from("user_reality_checks")
+    .insert(checksToInsert);
+
+  if (error) {
+    console.error("Empfohlene Reality Checks konnten nicht erstellt werden:", error);
+  }
+}
+
+function sortRealityChecks(checks) {
+  return checks.sort((a, b) => {
+    const scoreA =
+      Number(a.is_favorite) * 100 +
+      Number(a.use_for_notifications) * 20 +
+      Number(a.is_active) * 10;
+
+    const scoreB =
+      Number(b.is_favorite) * 100 +
+      Number(b.use_for_notifications) * 20 +
+      Number(b.is_active) * 10;
+
+    return scoreB - scoreA;
+  });
+}
+
 async function loadActiveRealityChecks() {
   const { data, error } = await lucidSupabase
-    .from("custom_reality_checks")
+    .from("user_reality_checks")
     .select("*")
     .eq("user_id", currentUser.id)
-    .eq("is_active", true)
-    .order("created_at", { ascending: true });
+    .eq("is_active", true);
 
   if (error) {
     console.error("Reality Checks konnten nicht geladen werden:", error);
@@ -54,7 +129,7 @@ async function loadActiveRealityChecks() {
     return;
   }
 
-  activeRealityChecks = data || [];
+  activeRealityChecks = sortRealityChecks(data || []);
 }
 
 function renderRealityChecks() {
@@ -213,6 +288,7 @@ async function initRealityCheck() {
 
   currentProfile = await loadProfileFromSupabase();
 
+  await createRecommendedRealityChecksIfNeeded();
   await loadActiveRealityChecks();
   renderRealityChecks();
   await updateProgress();

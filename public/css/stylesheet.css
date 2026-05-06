@@ -1073,3 +1073,10 @@ body::after {
   padding-left: 14px;
   padding-right: 14px;
 }
+.app {
+    visibility: hidden;
+}
+
+.app.authenticated {
+    visibility: visible;
+}

@@ -1,27 +1,27 @@
-async function getCurrentSession() {
+async function guardProtectedPage() {
+  const publicPages = [
+    "index.html",
+    "login.html",
+    "register.html",
+    "forgot-password.html",
+    "reset-password.html"
+  ];
+
+  const currentPage = window.location.pathname.split("/").pop() || "index.html";
+
+  if (publicPages.includes(currentPage)) {
+    document.body.classList.remove("auth-loading");
+    return;
+  }
+
   const { data, error } = await lucidSupabase.auth.getSession();
 
-  if (error) {
-    console.error("Session konnte nicht geprüft werden:", error);
-    return null;
+  if (error || !data.session) {
+    window.location.replace("./login.html");
+    return;
   }
 
-  return data.session;
+  document.body.classList.remove("auth-loading");
 }
-async function requireAuth() {
-  const session = await getCurrentSession();
 
-  if (!session) {
-    window.location.href = "./login.html";
-    return null;
-  }
-
-  return session.user;
-}
-async function redirectIfLoggedIn() {
-  const session = await getCurrentSession();
-
-  if (session) {
-    window.location.href = "./dashboard.html";
-  }
-}
+guardProtectedPage();

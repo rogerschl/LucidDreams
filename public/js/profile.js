@@ -54,29 +54,6 @@ let customRealityChecks = [];
 let editingRealityCheckId = null;
 let deletingRealityCheckId = null;
 
-const DEFAULT_REALITY_CHECKS = [
-  {
-    title: "Nasen-Test",
-    text: "Halte dir die Nase zu und versuche zu atmen. Wenn du trotzdem atmen kannst, träumst du vielleicht.",
-    is_active: false,
-    use_for_notifications: true,
-    is_favorite: true
-  },
-  {
-    title: "Hände prüfen",
-    text: "Schau dir deine Hände genau an. Haben sie die richtige Anzahl Finger? Sieht etwas seltsam aus?",
-    is_active: true,
-    use_for_notifications: true,
-    is_favorite: false
-  },
-  {
-    title: "Umgebung hinterfragen",
-    text: "Frage dich bewusst: Wie bin ich hierher gekommen? Was habe ich vor 10 Minuten gemacht?",
-    is_active: false,
-    use_for_notifications: true,
-    is_favorite: false
-  }
-];
 
 async function protectPage() {
   const { data, error } = await lucidSupabase.auth.getSession();
@@ -249,10 +226,25 @@ async function loadProfile() {
 
   updateGoalSliderUI();
 }
+function sortRealityChecks(checks) {
+  return checks.sort((a, b) => {
+    const scoreA =
+      Number(a.is_favorite) * 100 +
+      Number(a.use_for_notifications) * 20 +
+      Number(a.is_active) * 10;
+
+    const scoreB =
+      Number(b.is_favorite) * 100 +
+      Number(b.use_for_notifications) * 20 +
+      Number(b.is_active) * 10;
+
+    return scoreB - scoreA;
+  });
+}
 
 async function loadCustomRealityChecks() {
   const { data, error } = await lucidSupabase
-    .from("custom_reality_checks")
+    .from("user_reality_checks")
     .select("*")
     .eq("user_id", currentUser.id)
     .order("created_at", { ascending: false });
@@ -263,48 +255,65 @@ async function loadCustomRealityChecks() {
     return;
   }
 
-  customRealityChecks = data || [];
+  customRealityChecks = sortRealityChecks(data || []);
   renderCustomRealityChecks();
 }
 
-async function createDefaultRealityChecksIfNeeded() {
-  const existingTitles = customRealityChecks.map((check) => {
-    return check.title.toLowerCase().trim();
+async function createRecommendedRealityChecksIfNeeded() {
+  const { data: templates, error: templateError } = await lucidSupabase
+    .from("reality_check_templates")
+    .select("*")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  if (templateError) {
+    console.error("Empfohlene Reality Checks konnten nicht geladen werden:", templateError);
+    showMessage("Empfohlene Reality Checks konnten nicht geladen werden.");
+    return;
+  }
+
+  if (!templates || templates.length === 0) return;
+
+  const existingTemplateIds = customRealityChecks
+    .filter((check) => check.template_id)
+    .map((check) => check.template_id);
+
+  const missingTemplates = templates.filter((template) => {
+    return !existingTemplateIds.includes(template.id);
   });
 
-  const missingDefaultChecks = DEFAULT_REALITY_CHECKS.filter((check) => {
-    return !existingTitles.includes(check.title.toLowerCase().trim());
-  });
-
-  if (missingDefaultChecks.length === 0) return;
+  if (missingTemplates.length === 0) return;
 
   const alreadyHasFavorite = customRealityChecks.some((check) => {
     return check.is_favorite === true;
   });
 
-  const checksToInsert = missingDefaultChecks.map((check) => {
+  const checksToInsert = missingTemplates.map((template, index) => {
     return {
       user_id: currentUser.id,
-      title: check.title,
-      text: check.text,
-      is_active: check.is_active,
-      use_for_notifications: check.use_for_notifications,
-      is_favorite: alreadyHasFavorite ? false : check.is_favorite
+      template_id: template.id,
+      title: template.title,
+      text: template.text,
+      source: "recommended",
+      is_active:true,
+      use_for_notifications: true,
+      is_favorite: alreadyHasFavorite ? false : index === 1
     };
   });
 
   const { error } = await lucidSupabase
-    .from("custom_reality_checks")
+    .from("user_reality_checks")
     .insert(checksToInsert);
 
   if (error) {
-    console.error("Standard-Reality-Checks konnten nicht erstellt werden:", error);
-    showMessage("Standard-Reality-Checks konnten nicht erstellt werden.");
+    console.error("Empfohlene Reality Checks konnten nicht erstellt werden:", error);
+    showMessage("Empfohlene Reality Checks konnten nicht erstellt werden.");
     return;
   }
 
   await loadCustomRealityChecks();
 }
+
 
 function renderCustomRealityChecks() {
   realityCheckList.innerHTML = "";
@@ -444,7 +453,7 @@ async function confirmDeleteRealityCheck() {
   if (!deletingRealityCheckId || !currentUser) return;
 
   const { error } = await lucidSupabase
-    .from("custom_reality_checks")
+    .from("user_reality_checks")
     .delete()
     .eq("id", deletingRealityCheckId)
     .eq("user_id", currentUser.id);
@@ -615,7 +624,7 @@ realityCheckForm.addEventListener("submit", async (event) => {
 
   if (wantsFavorite) {
     const { error: favoriteResetError } = await lucidSupabase
-      .from("custom_reality_checks")
+      .from("user_reality_checks")
       .update({
         is_favorite: false
       })
@@ -639,20 +648,22 @@ realityCheckForm.addEventListener("submit", async (event) => {
   let error;
 
   if (editingRealityCheckId) {
-    const response = await lucidSupabase
-      .from("custom_reality_checks")
-      .update(checkData)
-      .eq("id", editingRealityCheckId)
-      .eq("user_id", currentUser.id);
+   const response = await lucidSupabase
+  .from("user_reality_checks")
+  .update(checkData)
+  .eq("id", editingRealityCheckId)
+  .eq("user_id", currentUser.id);
 
     error = response.error;
   } else {
-    const response = await lucidSupabase
-      .from("custom_reality_checks")
-      .insert({
-        user_id: currentUser.id,
-        ...checkData
-      });
+   const response = await lucidSupabase
+  .from("user_reality_checks")
+  .insert({
+    user_id: currentUser.id,
+    template_id: null,
+    source: "custom",
+    ...checkData
+  });
 
     error = response.error;
   }
@@ -715,7 +726,7 @@ async function initProfile() {
   if (!currentUser) return;
 
   await loadCustomRealityChecks();
-  await createDefaultRealityChecksIfNeeded();
+await createRecommendedRealityChecksIfNeeded();
 }
 
 initProfile();
