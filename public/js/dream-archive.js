@@ -131,7 +131,9 @@ function initPrettyInputs() {
       altFormat: "d.m.Y",
       allowInput: false,
       monthSelectorType: "static",
-      onChange: renderBoard
+      onChange: renderBoard,
+      position: "auto center",
+      disableMobile: true
     });
   }
 
@@ -142,7 +144,9 @@ function initPrettyInputs() {
       altInput: true,
       altFormat: "d.m.Y",
       allowInput: false,
-      monthSelectorType: "static"
+      monthSelectorType: "static",
+      position: "auto center",
+      disableMobile: true
     });
   }
 

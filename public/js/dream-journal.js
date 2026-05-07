@@ -45,14 +45,16 @@ const today = new Date().toISOString().split("T")[0];
 function initPrettyInputs() {
   if (dateInput && window.flatpickr) {
     datePicker = flatpickr(dateInput, {
-      locale: "de",
-      dateFormat: "Y-m-d",
-      altInput: true,
-      altFormat: "d.m.Y",
-      defaultDate: today,
-      allowInput: false,
-      monthSelectorType: "static"
-    });
+  locale: "de",
+  dateFormat: "Y-m-d",
+  altInput: true,
+  altFormat: "d.m.Y",
+  defaultDate: today,
+  allowInput: false,
+  monthSelectorType: "static",
+  position: "auto center",
+  disableMobile: true
+});
   }
 
   if (window.Choices) {
