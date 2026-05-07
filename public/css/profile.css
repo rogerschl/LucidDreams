@@ -867,3 +867,6 @@ body::before {
   background: rgba(255,200,80,0.18);
   border-color: rgba(255,200,80,0.30);
 }
+html {
+  background: #020610;
+}

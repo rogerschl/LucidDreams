@@ -873,3 +873,6 @@ body::before {
     align-items: flex-start;
   }
 }
+html {
+  background: #020610;
+}

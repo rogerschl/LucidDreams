@@ -352,3 +352,6 @@ body::before {
   color: rgba(255,255,255,0.56);
   line-height: 1.6;
 }
+html {
+  background: #020610;
+}

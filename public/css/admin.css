@@ -357,3 +357,6 @@ body::before {
     flex: 1;
   }
 }
+html {
+  background: #020610;
+}

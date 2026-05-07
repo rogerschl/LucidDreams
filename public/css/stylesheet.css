@@ -1100,3 +1100,6 @@ body::after {
 .resend-message.error {
   color: #ff9bad;
 }
+html {
+  background: #020610;
+}

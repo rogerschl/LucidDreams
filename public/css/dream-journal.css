@@ -882,3 +882,6 @@ body::before {
     width: 100%;
   }
 }
+html {
+  background: #020610;
+}
